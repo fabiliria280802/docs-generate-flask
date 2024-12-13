@@ -76,7 +76,7 @@
     <div class="invoice-container">
         <!-- Header -->
         <div class="header">
-            <img src="{{ url_for('static', filename='assets/kappa-logo.png') }}" alt="Kappa Logo">
+            <img src="{{ url_for('static', filename='assets/' + data.get('company').get('name')|lower + '-logo.png') }}" alt="Logo">
             <div>
                 <div class="invoice-title">Invoice</div>
                 <div class="invoice-original">Original</div>

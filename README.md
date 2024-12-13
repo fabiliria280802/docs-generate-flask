@@ -25,9 +25,9 @@ This my repo for an flask app that can generate docs
 
 ## How to run (windows)
 1. Create a virtual environment: `python -m venv env`
-2. Activate the virtual environment: `env/Scripts/activate`
+2. Activate the virtual environment: `.\venv\Scripts\activate`
 3. Install the dependencies: `pip install -r requirements.txt`
-4. Run the app: `python app.py`
+4. Run the app: `python -m flask --app .\app.py run`
 
 ```bash
 pip install -r requirements.txt

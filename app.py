@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, request
+from flask import Flask, render_template, send_from_directory, request, jsonify
 from weasyprint import HTML
 import os
 import json
@@ -15,9 +15,7 @@ def get_invoice_data():
     try:
         json_path = os.path.join('static', 'data', 'invoice-data.json')
         with open(json_path, 'r', encoding='utf-8') as file:
-            data = json.load(file)
-            print("Datos cargados:", data)  # Debug print
-            return data
+            return json.load(file)
     except Exception as e:
         print(f"Error al leer JSON: {str(e)}")
         return None
@@ -26,23 +24,59 @@ def get_invoice_data():
 def home():
     invoice_data = get_invoice_data()
     if invoice_data is None:
-        return "Error: No se pudo cargar los datos de la factura", 500
-    print("Datos para el template:", invoice_data)  # Debug print
-    return render_template('invoice.html', data=invoice_data)
+        return "Error: No se pudo cargar los datos de las facturas", 500
+    # Mostrar la lista de facturas disponibles
+    return render_template('invoice_list.html', invoices=invoice_data['invoices'])
 
-@app.route('/generate_invoice')
-def generate_invoice():
+@app.route('/invoice/<int:index>')
+def show_invoice(index):
     invoice_data = get_invoice_data()
     if invoice_data is None:
-        return "Error: No se pudo cargar los datos de la factura", 500
+        return "Error: No se pudo cargar los datos de las facturas", 500
+    
+    try:
+        invoice = invoice_data['invoices'][index]
+        return render_template('invoice.html', data=invoice)
+    except IndexError:
+        return "Factura no encontrada", 404
 
-    print("Datos para generar PDF:", invoice_data)  # Debug print
-    rendered = render_template('invoice.html', data=invoice_data)
+@app.route('/generate_invoice/<int:index>')
+def generate_invoice(index):
+    invoice_data = get_invoice_data()
+    if invoice_data is None:
+        return "Error: No se pudo cargar los datos de las facturas", 500
 
-    pdf_path = os.path.join('examples', 'invoice.pdf')
-    HTML(string=rendered, base_url=request.base_url).write_pdf(pdf_path)
+    try:
+        invoice = invoice_data['invoices'][index]
+        rendered = render_template('invoice.html', data=invoice)
+        
+        # Crear nombre de archivo único basado en el número de factura
+        filename = f"invoice_{invoice['invoice']['number']}.pdf"
+        pdf_path = os.path.join('examples', filename)
+        
+        HTML(string=rendered, base_url=request.base_url).write_pdf(pdf_path)
+        return f"Factura generada con éxito en /examples/{filename}"
+    except IndexError:
+        return "Factura no encontrada", 404
 
-    return "Factura generada con éxito en /examples/invoice.pdf"
+@app.route('/generate_all_invoices')
+def generate_all_invoices():
+    invoice_data = get_invoice_data()
+    if invoice_data is None:
+        return "Error: No se pudo cargar los datos de las facturas", 500
+
+    generated_files = []
+    for index, invoice in enumerate(invoice_data['invoices']):
+        rendered = render_template('invoice.html', data=invoice)
+        filename = f"invoice_{invoice['invoice']['number']}.pdf"
+        pdf_path = os.path.join('examples', filename)
+        HTML(string=rendered, base_url=request.base_url).write_pdf(pdf_path)
+        generated_files.append(filename)
+
+    return jsonify({
+        "message": "Todas las facturas fueron generadas con éxito",
+        "files": generated_files
+    })
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 3000))
