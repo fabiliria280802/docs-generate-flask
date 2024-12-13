@@ -76,7 +76,11 @@
     <div class="invoice-container">
         <!-- Header -->
         <div class="header">
-            <img src="{{ url_for('static', filename='assets/' + data.get('company').get('name')|lower + '-logo.png') }}" alt="Logo">
+            {% set company_name = data.company.name|lower|replace(' ', '') %}
+            <img src="{{ url_for('static', filename='assets/' ~ company_name ~ '-logo.png') }}"
+                 alt="{{ data.company.name }} Logo"
+                 onerror="this.src='{{ url_for('static', filename='assets/default-logo.png') }}"
+                 style="max-height: 80px; object-fit: contain;">
             <div>
                 <div class="invoice-title">Invoice</div>
                 <div class="invoice-original">Original</div>

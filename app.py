@@ -33,9 +33,11 @@ def show_invoice(index):
     invoice_data = get_invoice_data()
     if invoice_data is None:
         return "Error: No se pudo cargar los datos de las facturas", 500
-    
+
     try:
         invoice = invoice_data['invoices'][index]
+        company_name = invoice['company']['name'].lower().replace(' ', '')
+        print(f"Mostrando factura para compañía: {company_name}")  # Debug
         return render_template('invoice.html', data=invoice)
     except IndexError:
         return "Factura no encontrada", 404
@@ -49,11 +51,11 @@ def generate_invoice(index):
     try:
         invoice = invoice_data['invoices'][index]
         rendered = render_template('invoice.html', data=invoice)
-        
+
         # Crear nombre de archivo único basado en el número de factura
         filename = f"invoice_{invoice['invoice']['number']}.pdf"
         pdf_path = os.path.join('examples', filename)
-        
+
         HTML(string=rendered, base_url=request.base_url).write_pdf(pdf_path)
         return f"Factura generada con éxito en /examples/{filename}"
     except IndexError:
@@ -77,6 +79,55 @@ def generate_all_invoices():
         "message": "Todas las facturas fueron generadas con éxito",
         "files": generated_files
     })
+
+@app.route('/check_logos')
+def check_logos():
+    logos_dir = os.path.join(os.path.dirname(__file__), 'static', 'assets')
+    available_logos = os.listdir(logos_dir)
+
+    invoice_data = get_invoice_data()
+    companies = []
+    if invoice_data and 'invoices' in invoice_data:
+        for invoice in invoice_data['invoices']:
+            company_name = invoice.get('company', {}).get('name', '').lower().replace(' ', '')
+            expected_logo = f"{company_name}-logo.png"
+            companies.append({
+                'name': company_name,
+                'expected_logo': expected_logo,
+                'logo_exists': expected_logo in available_logos
+            })
+
+    return jsonify({
+        'available_logos': available_logos,
+        'companies': companies
+    })
+
+@app.route('/debug_logos')
+def debug_logos():
+    logos_dir = os.path.join('static', 'assets')
+    return jsonify({
+        'logos_available': os.listdir(logos_dir),
+        'logos_needed': [
+            'kappa-logo.png',
+            'aws-logo.png',
+            'google-logo.png',
+            'microsoft-logo.png',
+            'dell-logo.png',
+            'salesforce-logo.png',
+            'ibm-logo.png',
+            'default-logo.png'
+        ]
+    })
+
+@app.route('/list_all')
+def list_all():
+    invoice_data = get_invoice_data()
+    if invoice_data and 'invoices' in invoice_data:
+        return jsonify({
+            'total_invoices': len(invoice_data['invoices']),
+            'companies': [inv['company']['name'] for inv in invoice_data['invoices']]
+        })
+    return "No hay datos", 404
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 3000))
