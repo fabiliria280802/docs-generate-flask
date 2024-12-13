@@ -1,0 +1,40 @@
+/*this is an example of the data that you can use to generate the invoice*/
+{
+    "company": {
+        "name": "Tu Empresa",
+        "address": "Dirección de la empresa",
+        "city": "Ciudad",
+        "country": "País",
+        "phone": "+1234567890",
+        "website": "www.tuempresa.com",
+        "taxId": "123456789"
+    },
+    "invoice": {
+        "number": "INV-001",
+        "date": "2024-03-20",
+        "payableAt": "2024-04-20",
+        "orderNumber": "ORD-001"
+    },
+    "client": {
+        "name": "Nombre del Cliente",
+        "ruc": "RUC12345",
+        "address": "Dirección del cliente",
+        "city": "Ciudad del cliente",
+        "country": "País del cliente"
+    },
+    "items": [
+        {
+            "code": "ITEM1",
+            "description": "Producto 1",
+            "quantity": 1,
+            "unitCost": 100.00,
+            "cost": 100.00
+        }
+    ],
+    "totals": {
+        "beforeTax": 100.00,
+        "taxRate": 18,
+        "tax": 18.00,
+        "totalDue": 118.00
+    }
+}

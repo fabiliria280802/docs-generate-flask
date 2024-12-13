@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-height: 80px;
+        }
+        .header .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: red;
+        }
+        .header .invoice-original {
+            font-size: 18px;
+            color: blue;
+        }
+        .company-info, .invoice-info {
+            margin-bottom: 20px;
+        }
+        .company-info p, .invoice-info p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .table th, .table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        .totals {
+            text-align: right;
+        }
+        .totals td {
+            font-size: 14px;
+            padding: 8px;
+        }
+        .footer {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="header">
+            <img src="{{ url_for('static', filename='assets/kappa-logo.png') }}" alt="Kappa Logo">
+            <div>
+                <div class="invoice-title">Invoice</div>
+                <div class="invoice-original">Original</div>
+            </div>
+        </div>
+
+        <!-- Company Info -->
+        <div class="company-info">
+            {% if data and data.get('company') %}
+            <p><strong>{{ data.get('company').get('name') }}</strong></p>
+            <p>{{ data.get('company').get('address') }}</p>
+            <p>{{ data.get('company').get('city') }}</p>
+            <p>{{ data.get('company').get('country') }}</p>
+            <p>Tel: {{ data.get('company').get('phone') }}</p>
+            <p>{{ data.get('company').get('website') }}</p>
+            <p>Tax ID: {{ data.get('company').get('taxId') }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Invoice Info -->
+        <div class="invoice-info">
+            {% if data and data.get('invoice') and data.get('client') %}
+            <p><strong>Invoice No:</strong> {{ data.get('invoice').get('number') }}</p>
+            <p><strong>Invoice Date:</strong> {{ data.get('invoice').get('date') }}</p>
+            <p><strong>Payable At:</strong> {{ data.get('invoice').get('payableAt') }}</p>
+            <p><strong>Order No:</strong> {{ data.get('invoice').get('orderNumber') }}</p>
+            <p><strong>To:</strong> {{ data.get('client').get('name') }}</p>
+            <p>Attn: RUC: {{ data.get('client').get('ruc') }}</p>
+            <p>{{ data.get('client').get('address') }}</p>
+            <p>{{ data.get('client').get('city') }}</p>
+            <p>{{ data.get('client').get('country') }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Table -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item No</th>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>#</th>
+                    <th>Unit Cost</th>
+                    <th>Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if data and data.get('items') %}
+                    {% for item in data.get('items') %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.code }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ "%.2f"|format(item.unitCost) }}</td>
+                        <td>${{ "%.2f"|format(item.cost) }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6">No hay items disponibles</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Totals -->
+        <table class="totals">
+            {% if data and data.totals %}
+            <tr>
+                <td>Total before TAX:</td>
+                <td>${{ "%.2f"|format(data.totals.beforeTax) }}</td>
+            </tr>
+            <tr>
+                <td>TAX {{ data.totals.taxRate }}%:</td>
+                <td>${{ "%.2f"|format(data.totals.tax) }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total Due:</strong></td>
+                <td><strong>${{ "%.2f"|format(data.totals.totalDue) }}</strong></td>
+            </tr>
+            {% endif %}
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+            Software licenses are delivered on immaterial support.<br>
+            This invoice is in US Dollars.
+        </div>
+    </div>
+</body>
+</html>
