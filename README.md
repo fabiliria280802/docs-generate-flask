@@ -49,4 +49,6 @@ curl http://localhost:3000/generate_invoice?data=
 ```
 ### How to generate invoice with a specific data and a specific template
 
-
+```bash
+curl http://localhost:3000/generate_invoice?data=
+```
