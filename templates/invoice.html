@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice</title>
     <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        @media print {
+            body {
+                width: 210mm;
+                height: 297mm;
+            }
+
+            .invoice-container {
+                margin: 0;
+                padding: 20mm;
+                border: none;
+                box-shadow: none;
+                width: 210mm;
+                height: 297mm;
+            }
+
+
+            .page-break {
+                page-break-after: always;
+            }
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -12,58 +36,105 @@
             background-color: #fff;
         }
         .invoice-container {
-            max-width: 800px;
-            margin: 20px auto;
-            border: 1px solid #ccc;
-            padding: 20px;
+            width: 210mm;
+            height: 297mm;
+            margin: 20mm auto;
+            border: 1mm solid #ccc;
+            padding: 20mm;
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            border: 1px solid #000;
+            font-size: 12px;
         }
         .header img {
             max-height: 80px;
+            object-fit: contain;
         }
-        .header .invoice-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: red;
+        .header-logo{
+            width: 20%;
+            height: 152px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #000;
         }
-        .header .invoice-original {
-            font-size: 18px;
-            color: blue;
+        .company-info-left, .company-info-right {
+            width: 40%;
+            padding: 5px;
+            font-size: 12px;
         }
-        .company-info, .invoice-info {
+        .company-info-left{
+            height: 142px;
+        }
+        .invoice-info {
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+            border: 1px solid #000;
         }
-        .company-info p, .invoice-info p {
-            margin: 4px 0;
-            font-size: 14px;
+        .invoice-info-left{
+            background-color: #f5f5f5;
+            width: 22%;
+            padding: 5px;
+            font-size: 12px;
+            height: 142px;
+            border-right: 1px solid #000;
+        }
+        .invoice-info-center{
+            width: 40%;
+            padding: 5px;
+            font-size: 12px;
+            height: 142px;
+            border-right: 1px solid #000;
+        }
+        .invoice-info-right{
+            width: 55%;
+            padding: 5px;
+            font-size: 12px;
+            height: 142px;
         }
         .table {
             width: 100%;
+            height: 800px;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
         }
-        .table th, .table td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-            font-size: 14px;
-        }
-        .table th {
-            background-color: #f5f5f5;
-            font-weight: bold;
-        }
-        .totals {
-            text-align: right;
-        }
-        .totals td {
-            font-size: 14px;
-            padding: 8px;
-        }
+.table th, .table td {
+    border: 1px solid #000;
+    padding: 5px 8px;
+    text-align: left;
+}
+.table th {
+    font-weight: normal;
+    text-align: center;
+    border-bottom: 2px solid #000;
+    border-right: none;
+}
+.table th:last-child {
+    border-right: 1px solid #000;
+}
+.table .description {
+    text-align: left;
+    line-height: 1.4;
+}
+.table .right-align {
+    text-align: right;
+    padding-right: 10px;
+}
+.table .center-align {
+    text-align: center;
+}
+.table td a {
+    color: #0074D9;
+    text-decoration: underline;
+}
         .footer {
             font-size: 12px;
             color: #666;
@@ -75,68 +146,89 @@
 <body>
     <div class="invoice-container">
         <!-- Header -->
-        <div class="header">
+        <div class="header"  style="">
             {% set company_name = data.company.name|lower|replace(' ', '') %}
+            <div class="header-logo">
             <img src="{{ url_for('static', filename='assets/' ~ company_name ~ '-logo.png') }}"
                  alt="{{ data.company.name }} Logo"
-                 onerror="this.src='{{ url_for('static', filename='assets/default-logo.png') }}"
-                 style="max-height: 80px; object-fit: contain;">
-            <div>
-                <div class="invoice-title">Invoice</div>
-                <div class="invoice-original">Original</div>
+                 onerror="this.src='{{ url_for('static', filename='assets/default-logo.png') }}">
             </div>
-        </div>
-
-        <!-- Company Info -->
-        <div class="company-info">
-            {% if data and data.get('company') %}
-            <p><strong>{{ data.get('company').get('name') }}</strong></p>
-            <p>{{ data.get('company').get('address') }}</p>
-            <p>{{ data.get('company').get('city') }}</p>
-            <p>{{ data.get('company').get('country') }}</p>
-            <p>Tel: {{ data.get('company').get('phone') }}</p>
-            <p>{{ data.get('company').get('website') }}</p>
-            <p>Tax ID: {{ data.get('company').get('taxId') }}</p>
-            {% endif %}
+            <!-- Company Info -->
+            <div class="company-info-left">
+                {% if data and data.get('company') %}
+                <p>{{ data.get('company').get('name') }}</p>
+                <p>{{ data.get('company').get('address') }}</p>
+                <p>{{ data.get('company').get('city') }}</p>
+                <p>{{ data.get('company').get('country') }}</p>
+                {% endif %}
+            </div>
+            <div class="company-info-right">
+                {% if data and data.get('company') %}
+                <p>Tel: {{ data.get('company').get('phone') }}</p>
+                <p>{{ data.get('company').get('website') }}</p>
+                <p>{{ data.get('company').get('email') }}</p>
+                <p>Tax ID: {{ data.get('company').get('taxId') }}</p>
+                {% endif %}
+            </div>
         </div>
 
         <!-- Invoice Info -->
         <div class="invoice-info">
-            {% if data and data.get('invoice') and data.get('client') %}
-            <p><strong>Invoice No:</strong> {{ data.get('invoice').get('number') }}</p>
-            <p><strong>Invoice Date:</strong> {{ data.get('invoice').get('date') }}</p>
-            <p><strong>Payable At:</strong> {{ data.get('invoice').get('payableAt') }}</p>
-            <p><strong>Order No:</strong> {{ data.get('invoice').get('orderNumber') }}</p>
-            <p><strong>To:</strong> {{ data.get('client').get('name') }}</p>
-            <p>Attn: RUC: {{ data.get('client').get('ruc') }}</p>
-            <p>{{ data.get('client').get('address') }}</p>
-            <p>{{ data.get('client').get('city') }}</p>
-            <p>{{ data.get('client').get('country') }}</p>
-            {% endif %}
+            <div class="invoice-info-left">
+                <p>Invoice No</p>
+                <p>Invoice Date</p>
+                <p>Payable At</p>
+                <p>Order No</p>
+            </div>
+            <div class="invoice-info-center">
+                {% if data and data.get('invoice') and data.get('client') %}
+                <p>{{ data.get('invoice').get('number') }}</p>
+                <p>{{ data.get('invoice').get('date') }}</p>
+                <p>{{ data.get('invoice').get('payableAt') }}</p>
+                <p>{{ data.get('invoice').get('orderNumber') }}</p>
+                {% endif %}
+            </div>
+            <div class="invoice-info-right">
+                {% if data and data.get('invoice') and data.get('client') %}
+                <p>{{ data.get('client').get('name') }}</p>
+                <p>Attn: RUC: {{ data.get('client').get('ruc') }}</p>
+                <p>{{ data.get('client').get('address') }}</p>
+                <p>{{ data.get('client').get('city') }}</p>
+                <p>{{ data.get('client').get('country') }}</p>
+                {% endif %}
+            </div>
+
+
+
         </div>
 
-        <!-- Table -->
-        <table class="table">
+        <!-- Table subtotal -->
+        <table class="table"></table>
             <thead>
                 <tr>
-                    <th>Item No</th>
+                    <th>Item n°</th>
                     <th>Code</th>
                     <th>Description</th>
-                    <th>#</th>
-                    <th>Unit Cost</th>
-                    <th>Cost</th>
+                    <th class="center-align">#</th>
+                    <th class="right-align">Unit Cost</th>
+                    <th class="right-align">Cost</th>
                 </tr>
             </thead>
             <tbody>
                 {% if data and data.get('items') %}
                     {% for item in data.get('items') %}
                     <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ item.code }}</td>
-                        <td>{{ item.description }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>${{ "%.2f"|format(item.unitCost) }}</td>
-                        <td>${{ "%.2f"|format(item.cost) }}</td>
+                        <td class="center-align">{{ loop.index }}</td>
+                        <td class="center-align">{{ item.code }}</td>
+                        <td class="description">
+                            {{ item.description }}<br>
+                            {% if item.hes %}
+                            HES: <a href="#">{{ item.hes }}</a>
+                            {% endif %}
+                        </td>
+                        <td class="center-align">{{ item.quantity }}</td>
+                        <td class="right-align">${{ "%.2f"|format(item.unitCost) }}</td>
+                        <td class="right-align">${{ "%.2f"|format(item.cost) }}</td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -147,23 +239,25 @@
             </tbody>
         </table>
 
-        <!-- Totals -->
-        <table class="totals">
-            {% if data and data.totals %}
-            <tr>
-                <td>Total before TAX:</td>
-                <td>${{ "%.2f"|format(data.totals.beforeTax) }}</td>
-            </tr>
-            <tr>
-                <td>TAX {{ data.totals.taxRate }}%:</td>
-                <td>${{ "%.2f"|format(data.totals.tax) }}</td>
-            </tr>
-            <tr>
-                <td><strong>Total Due:</strong></td>
-                <td><strong>${{ "%.2f"|format(data.totals.totalDue) }}</strong></td>
-            </tr>
-            {% endif %}
-        </table>
+        <div class="invoice-end">
+
+        </div>
+
+        <div class="invoice-bank-account">
+            <div class="invoice-bank-account-left">
+                <p>Bank Detailts </p>
+            </div>
+            <div class="invoice-bank-account-center">
+                <p>Scotiabank Uruguay S.A.</p>
+                <p>Branch 19</p>
+                <p></p>
+            </div>
+            <div class="invoice-bank-account-right">
+                <p>Account: 1858334800</p>
+                <p>Branch 19 For wire transfer, please refer to instructions attached</p>
+                <p>Currency of this account: US$</p>
+            </div>
+        </div>
 
         <!-- Footer -->
         <div class="footer">
