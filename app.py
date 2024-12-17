@@ -36,11 +36,15 @@ def show_invoice(index):
 
     try:
         invoice = invoice_data['invoices'][index]
-        company_name = invoice['company']['name'].lower().replace(' ', '')
-        print(f"Mostrando factura para compañía: {company_name}")  # Debug
-        return render_template('invoice.html', data=invoice)
+
+        # Cálculo del índice de la imagen (1-21)
+        total_images = 21
+        image_index = (index % total_images) + 1  # Cicla de 1 a 21
+
+        return render_template('invoice.html', data=invoice, image_index=image_index)
     except IndexError:
         return "Factura no encontrada", 404
+
 
 @app.route('/generate_invoice/<int:index>')
 def generate_invoice(index):
@@ -50,9 +54,10 @@ def generate_invoice(index):
 
     try:
         invoice = invoice_data['invoices'][index]
-        rendered = render_template('invoice.html', data=invoice)
+        total_images = 21
+        image_index = (index % total_images) + 1
 
-        # Crear nombre de archivo único basado en el número de factura
+        rendered = render_template('invoice.html', data=invoice, image_index=image_index)
         filename = f"invoice_{invoice['invoice']['number']}.pdf"
         pdf_path = os.path.join('examples', filename)
 
@@ -67,11 +72,21 @@ def generate_all_invoices():
     if invoice_data is None:
         return "Error: No se pudo cargar los datos de las facturas", 500
 
+    total_images = 21  # Número total de imágenes
     generated_files = []
+
     for index, invoice in enumerate(invoice_data['invoices']):
-        rendered = render_template('invoice.html', data=invoice)
+        # Calcular el índice de la imagen (1-21) de manera cíclica
+        image_index = (index % total_images) + 1
+
+        # Renderizar la plantilla pasando el índice de la imagen
+        rendered = render_template('invoice.html', data=invoice, image_index=image_index)
+        
+        # Crear el nombre del archivo basado en el número de factura
         filename = f"invoice_{invoice['invoice']['number']}.pdf"
         pdf_path = os.path.join('examples', filename)
+        
+        # Generar el PDF y guardarlo
         HTML(string=rendered, base_url=request.base_url).write_pdf(pdf_path)
         generated_files.append(filename)
 

@@ -132,10 +132,9 @@
         <!-- Header -->
         <div class="header">
             {% set company_name = data.company.name|lower|replace(' ', '') %}
-            <div class="header-logo">
-                <img src="{{ url_for('static', filename='assets/' ~ company_name ~ '-logo.png') }}"
-                     alt="{{ data.company.name }} Logo"
-                     onerror="this.src='{{ url_for('static', filename='assets/default-logo.png') }}">
+            <div class="header-logo" src="{{ url_for('static', filename='assets/image' ~ image_index ~ '.png') }}"
+                alt="Company Logo"
+                onerror="this.src='{{ url_for('static', filename='assets/image1.png') }}'">
             </div>
             <!-- Company Info -->
             <div class="company-info-left">
@@ -204,7 +203,7 @@
                         <td class="description">
                             {{ item.description }}<br>
                             {% if item.hes %}
-                            HES: <a href="#">{{ item.hes }}</a>
+                            HES:{{ item.hes }}
                             {% endif %}
                         </td>
                         <td class="center-align">{{ item.quantity }}</td>
