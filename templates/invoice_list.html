@@ -52,7 +52,11 @@
             <h3>Factura {{ invoice.invoice.number }}</h3>
             <p><strong>Cliente:</strong> {{ invoice.client.name }}</p>
             <p><strong>Fecha:</strong> {{ invoice.invoice.date }}</p>
-            <p><strong>Total:</strong> ${{ "%.2f"|format(invoice.totals.totalDue) }}</p>
+            {% if invoice.totals and invoice.totals.totalDue is not none %}
+                <p><strong>Total:</strong> ${{ "%.2f"|format(invoice.totals.totalDue) }}</p>
+            {% else %}
+                <p><strong>Total:</strong> No disponible</p>
+            {% endif %}
             <div class="actions">
                 <a href="{{ url_for('show_invoice', index=loop.index0) }}" class="button">Ver</a>
                 <a href="{{ url_for('generate_invoice', index=loop.index0) }}" class="button">Generar PDF</a>
