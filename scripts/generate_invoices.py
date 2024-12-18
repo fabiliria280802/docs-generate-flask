@@ -15,7 +15,7 @@ VALID_RUCS = [
 ]
 
 # Directorio donde se guardarán las imágenes de firmas
-SIGNATURE_DIR = "../static/assets/signatures"
+SIGNATURE_DIR = "../static/signatures"
 
 def generate_signature(name, filename):
     """Generar una imagen de firma realista basada en un nombre."""
@@ -58,14 +58,16 @@ def generate_random_invoice_and_delivery_data_and_contract_data(num_invoices=900
 
     for i in range(num_invoices):
         company_name = fake.company().replace(",", "").replace(".", "").lower()
-        before_tax = round(random.uniform(100, 1000), 2)
+        united_company_name = company_name.replace(" ", "")
+        quantity = random.randint(1, 5)
+        unit_cost = round(random.uniform(20, 200), 2)
+        before_tax = round(quantity * unit_cost, 2)
         tax_rate = 18
         tax = round(before_tax * tax_rate / 100, 2)
         total_due = round(before_tax + tax, 2)
 
         # Generar la fecha "date" y "payableAt"
-        invoice_date = fake.date_this_year()
-        invoice_date_obj = datetime.strptime(invoice_date, "%Y-%m-%d")
+        invoice_date_obj = fake.date_this_year()  # Ya es un objeto datetime.date
         max_payable_days = 30
         payable_at_date = invoice_date_obj + timedelta(days=random.randint(0, max_payable_days))
 
@@ -83,14 +85,14 @@ def generate_random_invoice_and_delivery_data_and_contract_data(num_invoices=900
                 "city": fake.city(),
                 "country": fake.country(),
                 "phone": fake.phone_number(),
-                "website": f"www.{company_name}.com",
-                "email": f"info@{company_name}.com",
+                "website": f"www.{united_company_name}.com",
+                "email": f"info@{united_company_name}.com",
                 "taxId": fake.ean8()
             },
             "invoice": {
                 "number": f"INV-{i+1:03}",
-                "date": invoice_date_obj.date().isoformat(),
-                "payableAt": payable_at_date.date().isoformat(),
+                "date": invoice_date_obj.isoformat(),  # Convertir a string ISO
+                "payableAt": payable_at_date.isoformat(),  # Convertir a string ISO
                 "orderNumber": f"ORD-{i+1:03}"
             },
             "client": client_data,
@@ -99,8 +101,8 @@ def generate_random_invoice_and_delivery_data_and_contract_data(num_invoices=900
                     "code": f"PROD-{chr(65 + (i % 26))}1",
                     "description": fake.catch_phrase(),
                     "hes": fake.ean8(),
-                    "quantity": random.randint(1, 5),
-                    "unitCost": round(before_tax / random.randint(1, 5), 2),
+                    "quantity": quantity,
+                    "unitCost": unit_cost,
                     "cost": before_tax
                 }
             ],
@@ -121,8 +123,8 @@ def generate_random_invoice_and_delivery_data_and_contract_data(num_invoices=900
                 "invoiceNumber": invoice["invoice"]["number"],
                 "hes": invoice["items"][0]["hes"],  # Arreglo: Acceder al primer ítem
                 "orderNumber": invoice["invoice"]["orderNumber"],
-                "date": invoice_date_obj.date().isoformat(),
-                "endDate": (invoice_date_obj + timedelta(days=random.randint(1, 365))).date().isoformat(),
+                "date": invoice_date_obj.isoformat(),
+                "endDate": (invoice_date_obj + timedelta(days=random.randint(1, 365))).isoformat(),
                 "price": invoice["totals"]["totalDue"],
                 "inCharge": in_charge_name,
                 "position": fake.job(),

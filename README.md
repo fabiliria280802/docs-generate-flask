@@ -49,22 +49,43 @@ This my repo is microservice for generate docs in pdf using flask and jinja2 tem
 
 ## How to run app (windows)
 **Description:** This is the main app that will be used to generate docs.
-1. Create a virtual environment: ```bash python -m venv env```
-2. Activate the virtual environment: ```bash .\venv\Scripts\activate```
-3. Install the dependencies: ```bash python -m pip install -r requirements.txt```
-4. Run the app: ```bash python -m flask --app .\app.py run```
+1. Create a virtual environment:
+```bash
+ python -m venv env
+ ```
+2. Activate the virtual environment:
+```bash
+    .\venv\Scripts\activate
+```
+3. Install the dependencies:
+```bash
+    python -m pip install -r requirements.txt
+```
+4. Run the app:
+```bash
+    python -m flask --app .\app.py run
+```
 
-**Note:** if you are having trouble with adding a new dependency, pliz go to requirements.txt then go back to step 3, finally use ```bash pip list``` to check if the dependency is installed, and write library_name==version in requirements.txt
+**Note:** if you are having trouble with adding a new dependency, pliz go to requirements.txt then go back to step 3, finally use `pip list` to check if the dependency is installed, and write library_name==version in requirements.txt
 
 ---
 
 ## How to run generate_invoices.py
 **Description:** This script is used to generate docs in json that will be used to generate docs in pdf.
-1. Go to the directory: ```bash cd scripts```
-2. Activate the virtual environment: ```bash .\venv\Scripts\activate```
-3. Run the script: ```bash python generate_invoices.py```
+1. Go to the directory:
+```bash
+cd scripts
+```
+2. Activate the virtual environment:
+```bash
+.\venv\Scripts\activate
+```
+3. Run the script:
+```bash
+ python generate_invoices.py
+ ```
 
-**Note:** If you have any issues with the virtual environment, you can try to install the dependencies manually and you will need to use command `deactivate` to deactivate the virtual environment and then run ```bash env/Scripts/activate``` to activate it again.
+**Note:** If you have any issues with the virtual environment, you can try to install the dependencies manually and you will need to use command `deactivate` to deactivate the virtual environment and then run `.\venv\Scripts\activate` to activate it again.
 
 ---
 ## Endpoints
