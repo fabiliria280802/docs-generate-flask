@@ -1,0 +1,67 @@
+
+{% extends "base.html" %}
+
+{% block title %}Contract List{% endblock %}
+
+{% block extra_css %}
+
+<style>
+    .contract-list {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .contract-item {
+        border: 1px solid #ccc;
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 5px;
+    }
+    .actions {
+        margin-top: 10px;
+    }
+    .button {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 3px;
+        margin-right: 10px;
+    }
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .generate-all {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contract-list">
+    <div class="header-container">
+        <h1>Lista de Contratos</h1>
+        <a href="{{ url_for('generate_all_contracts') }}" class="generate-all">Generar Todos los Contratos</a>
+    </div>
+    {% for contract in contracts %}
+<div class="contract-item">
+    <h3>Contrato #{{ loop.index + 1 }}</h3>
+    <p><strong>Cliente:</strong> {{ contract.company.name }}</p>
+    <p><strong>RUC:</strong> {{ contract.company.ruc }}</p>
+    <p><strong>HES:</strong> {{ contract.items.hes }}</p>
+    <div class="actions">
+        <a href="{{ url_for('show_contract', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Ver</a>
+        <a href="{{ url_for('generate_contract', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Generar PDF</a>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

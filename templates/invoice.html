@@ -43,6 +43,15 @@
             align-items: center;
             justify-content: center;
             border-right: 1px solid #000;
+            overflow: hidden;
+        }
+        .header-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            padding: 10px;
         }
         .company-info-left, .company-info-right {
             width: 40%;
@@ -163,9 +172,11 @@
         <!-- Header -->
         <div class="header">
             {% set company_name = data.company.name|lower|replace(' ', '') %}
-            <div class="header-logo" src="{{ url_for('static', filename='assets/image' ~ image_index ~ '.png') }}"
-                alt="Company Logo"
-                onerror="this.src='{{ url_for('static', filename='assets/image1.png') }}'">
+            <div class="header-logo">
+                <img src="{{ url_for('static', filename='assets/imagen' ~ image_index ~ '.png') }}"
+                     alt="Company Logo"
+                     onerror="this.src='{{ url_for('static', filename='assets/image1.png') }}'"
+                     style="display: block;">
             </div>
             <!-- Company Info -->
             <div class="company-info-left">
