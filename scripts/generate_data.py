@@ -49,11 +49,16 @@ def generate_signature(name, filename, lang="en"):
     if not os.path.exists(lang_dir):
         os.makedirs(lang_dir)
 
-    # Ruta a la fuente de firma (asegúrate de que exista)
-    font_path = "../static/fonts/signature.ttf"
+    # Ruta al archivo de la firma
     image_path = os.path.join(lang_dir, filename)
 
+    # Ruta relativa del archivo para guardar solo el nombre
+    relative_path = filename
+
     try:
+        # Ruta a la fuente de firma (asegúrate de que exista)
+        font_path = "../static/fonts/signature.ttf"
+
         # Crear una imagen en blanco
         img = Image.new('RGBA', (400, 100), (255, 255, 255, 0))
         draw = ImageDraw.Draw(img)
@@ -66,11 +71,12 @@ def generate_signature(name, filename, lang="en"):
 
         # Guardar la imagen
         img.save(image_path, "PNG")
-        return image_path
+        return relative_path  # Devuelve solo el nombre del archivo
     except Exception as e:
         print(f"Error al generar firma: {e}")
         return None
-
+        print(f"Error al generar firma: {e}")
+        return None
 
 def generate_hes(index):
     last3 = str(index + 1).zfill(3)
@@ -123,7 +129,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
         client_data_en = dict(base_client_data_en)
         client_data_en["employee_name"] = enap_employee_name_en
         client_data_en["employee_position"] = enap_employee_position_en
-        client_data_en["employee_signature"] = enap_signature_path_en
+        client_data_en["employee_signature"] = enap_signature_filename_en
 
         in_charge_name_en = fake_en.name()
         in_charge_position_en = random.choice(ACCOUNTING_POSITIONS_EN)
@@ -148,7 +154,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
             "items": [
                 {
                     "code": f"PROD-{chr(65 + (i % 26))}1",
-                    "description": fake_en.sentence(), 
+                    "description": fake_en.sentence(),
                     "hes": generate_hes(i),
                     "quantity": quantity,
                     "unitCost": unit_cost,
@@ -258,7 +264,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
         client_data_esp = dict(base_client_data_esp)
         client_data_esp["employee_name"] = enap_employee_name_esp
         client_data_esp["employee_position"] = enap_employee_position_esp
-        client_data_esp["employee_signature"] = enap_signature_path_esp
+        client_data_esp["employee_signature"] = enap_signature_filename_esp
 
         in_charge_name_esp = fake_es.name()
         in_charge_position_esp = random.choice(ACCOUNTING_POSITIONS_ES)

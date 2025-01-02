@@ -31,7 +31,7 @@ def get_data(data_type):
     """Función genérica para cargar datos desde JSON"""
     lang = request.args.get('lang', 'eng')
     json_path = os.path.join('static', f'data-{lang}', f'{data_type}-data.json')
-    
+
     try:
         with open(json_path, 'r', encoding='utf-8') as file:
             return json.load(file)
@@ -43,11 +43,11 @@ def pdf_to_png(pdf_path, png_path):
     """
     Convierte la PRIMERA página del PDF en una imagen PNG usando PyMuPDF.
     """
-    doc = fitz.open(pdf_path)  
+    doc = fitz.open(pdf_path)
     if doc.page_count > 0:
-        page = doc.load_page(0)  
-        pix = page.get_pixmap()  
-        pix.save(png_path)       
+        page = doc.load_page(0)
+        pix = page.get_pixmap()
+        pix.save(png_path)
     doc.close()
 
 
@@ -71,9 +71,9 @@ def contracts():
     contract_data = get_data('contract')
     if contract_data is None:
         return "Error: No se pudo cargar los datos de los contratos", 500
-    
+
     current_lang = request.args.get('lang', 'eng')
-    
+
     return render_template('contract_list.html',
                          contracts=contract_data['contracts'],
                          active_page='contracts',
@@ -85,9 +85,9 @@ def delivery_receipts():
     delivery_data = get_data('delivery')
     if delivery_data is None:
         return "Error: No se pudo cargar los datos de las actas de entrega", 500
-    
+
     current_lang = request.args.get('lang', 'eng')
-    
+
     return render_template('deliveryReceipt_list.html',
                          deliveries=delivery_data['deliveries'],
                          active_page='delivery_receipts',
@@ -102,7 +102,7 @@ def show_invoice(index):
     try:
         invoice = invoice_data['invoices'][index]
         total_images = 21
-        image_index = (index % total_images) + 1 
+        image_index = (index % total_images) + 1
 
         return render_template('invoice.html', data=invoice, image_index=image_index)
     except IndexError:
@@ -117,7 +117,7 @@ def show_contract(index):
     try:
         contract = contract_data['contracts'][index]
         total_images = 21
-        image_index = (index % total_images) + 1 
+        image_index = (index % total_images) + 1
 
         current_lang = request.args.get('lang', 'eng')
 
@@ -134,7 +134,7 @@ def show_delivery(index):
     try:
         delivery = delivery_data['deliveries'][index]
         total_images = 21
-        image_index = (index % total_images) + 1 
+        image_index = (index % total_images) + 1
 
         current_lang = request.args.get('lang', 'eng')
 
@@ -195,26 +195,21 @@ def generate_contract(index):
     if contract_data is None:
         return "Error: No se pudo cargar los datos de los contractos", 500
 
+    lang = request.args.get('lang', 'en')
     try:
         contract = contract_data['contracts'][index]
         total_images = 21
         image_index = (index % total_images) + 1
-        rendered = render_template('contract.html', data=contract, image_index=image_index)
+        rendered = render_template('contract.html', data=contract, image_index=image_index, lang=lang)
 
         # Generar PDF
-        pdf_filename = f"contract_{contract['contract']['number']}.pdf"
+        pdf_filename = f"contract_{contract['contract']['number']}_{lang}.pdf"
         pdf_path = os.path.join('examples', 'contract', 'pdf', pdf_filename)
         base_url = request.host_url.rstrip('/')
         HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
 
-        # Generar PNG
-        png_filename = f"contract_{contract['contract']['number']}.png"
-        png_path = os.path.join('examples', 'contract', 'png', png_filename)
-        pdf_to_png(pdf_path, png_path)
-
-
         # Generar XML
-        xml_filename = f"contract_{contract['contract']['number']}.xml"
+        xml_filename = f"contract_{contract['contract']['number']}_{lang}.xml"
         xml_path = os.path.join('examples', 'contract', 'xml', xml_filename)
         generate_contract_xml(contract, xml_path)
 
@@ -323,7 +318,7 @@ def generate_all_contracts():
             # Generar XML
             xml_filename = f"contract_{index+1}.xml"
             xml_path = os.path.join('examples', 'contract', 'xml', xml_filename)
-            
+
             # Puedes reusar la misma función generate_invoice_xml o crear una para contratos
             generate_invoice_xml(contract, xml_path)
             generated_files['xml'].append(xml_filename)

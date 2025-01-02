@@ -15,24 +15,34 @@
       size: A4;
       margin: 0;
     }
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
     body {
       font-family: Arial, sans-serif;
+      font-size: medium;
       margin: 0;
       padding: 0;
       background-color: #fff;
     }
     .contract-container {
-      width: 210mm;
+      width: 100%;
       margin: 0 auto;
-      border: 1mm solid #ccc;
       padding: 20mm;
       box-sizing: border-box;
       background: white;
+      page-break-inside: avoid;
+    }
+    .page-break {
+      page-break-before: always;
+      padding-bottom: 20px; /* Fuerza un salto de página */
     }
     h1{
       text-align: center;
     }
     h1, h2, h3 {
+      font-size: large;
       color: #333;
     }
     p{
@@ -40,6 +50,7 @@
     }
     .line {
       margin: auto;
+      font-size: small;
     }
     table {
       width: 100%;
@@ -56,321 +67,445 @@
     .signature {
       margin-top: 30px;
     }
+    .contract-container{
+      margin-bottom: 20px;
+    }
+    .contract-container, .contract-section, .contract-section-two, .table-section {
+      page-break-inside: avoid; /* Evita cortes dentro de secciones */
+  }
+  .contract-section-two{
+    padding-top:12mm;
+  }
+  table {
+    page-break-inside: auto; /* Permite cortes dentro de tablas */
+  }
+
+tr, td, th {
+    page-break-inside: avoid; /* Evita cortes en filas individuales */
+}
   </style>
 </head>
 <body>
 
 <div class="contract-container">
-
+<div class="contract-section">
   {% if data and data.get('company') and data.get('client') and data.get('contract') %}
   {% if lang == 'esp' %}
-    <h1>Contrato de Servicios</h1>
-    <p>
-      El presente Contrato de Servicios número <strong>{{ data.get('contract').get('number') }}</strong> (<strong>"Contrato"</strong>) es celebrado entre las siguientes partes: <strong>
-      {{ data.get('company').get('name') }}</strong>, con domicilio en {{ data.get('company').get('address') }}, {{ data.get('company').get('city') }}, {{ data.get('company').get('country') }}, en lo sucesivo denominado <strong>"Proveedor"</strong>; y <strong>
-      {{ data.get('client').get('name') }}</strong>, con domicilio en {{ data.get('client').get('address') }}, {{ data.get('client').get('city') }}, {{ data.get('client').get('country') }}, en lo sucesivo denominado <strong>"Cliente"</strong>.
-    </p>
-    <p>
-      Este Contrato establece los términos y condiciones bajo los cuales el Proveedor acuerda prestar servicios al Cliente, según se detalla en el presente documento. Ambas partes afirman su intención mutua de cumplir las disposiciones aquí descritas. La fecha de entrada en vigor de este Contrato será <strong>{{ data.get('contract').get('startDate') }}</strong>.
-    </p>
-  {% else %}
-    <h1>Service Contract</h1>
-    <p>
-      This Service Contract number <strong>{{ data.get('contract').get('number') }}</strong> (<strong>"Contract"</strong>) is entered into by and between the following parties:
-      {{ data.get('company').get('name') }}, with its principal office located at {{ data.get('company').get('address') }}, {{ data.get('company').get('city') }}, {{ data.get('company').get('country') }}, hereinafter referred to as <strong>"Provider"</strong>; and
-      {{ data.get('client').get('name') }}, with its principal address at {{ data.get('client').get('address') }}, {{ data.get('client').get('city') }}, {{ data.get('client').get('country') }}, hereinafter referred to as <strong>"Client"</strong>.
-    </p>
-    <p>
-      This Contract outlines the terms and conditions under which the Provider agrees to deliver services to the Client, as detailed herein. Both parties affirm their mutual intent to abide by the terms outlined in this document. The effective date of this Contract shall be <strong>{{ data.get('contract').get('startDate') }}</strong>.
-    </p>
-  {% endif %}
+  <h1>Contrato de Servicios</h1>
+<p>
+  El presente Contrato de Servicios número <strong>{{ data.get('contract').get('number') }}</strong> (<strong>"Contrato"</strong>) es celebrado entre las siguientes partes: <strong>
+  {{ data.get('company').get('name') }}</strong>, con domicilio en {{ data.get('company').get('address') }}, {{ data.get('company').get('city') }}, {{ data.get('company').get('country') }}, en lo sucesivo denominado <strong>"Proveedor"</strong>; y <strong>
+  {{ data.get('client').get('name') }}</strong>, con domicilio en {{ data.get('client').get('address') }}, {{ data.get('client').get('city') }}, {{ data.get('client').get('country') }}, en lo sucesivo denominado <strong>"Cliente"</strong>.
+</p>
+<p>
+  Este Contrato establece los términos y condiciones bajo los cuales el Proveedor acuerda prestar servicios al Cliente, según se detalla en el presente documento. Ambas partes afirman su intención mutua de cumplir las disposiciones aquí descritas. La fecha de entrada en vigor de este Contrato será <strong>{{ data.get('contract').get('startDate') }}</strong>.
+</p>
 {% else %}
-  <p><em>Información del contrato incompleta o no encontrada.</em></p>
+<h1>Service Contract</h1>
+<p>
+  This Service Contract number <strong>{{ data.get('contract').get('number') }}</strong> (<strong>"Contract"</strong>) is entered into by and between the following parties:
+  {{ data.get('company').get('name') }}, with its principal office located at {{ data.get('company').get('address') }}, {{ data.get('company').get('city') }}, {{ data.get('company').get('country') }}, hereinafter referred to as <strong>"Provider"</strong>; and
+  {{ data.get('client').get('name') }}, with its principal address at {{ data.get('client').get('address') }}, {{ data.get('client').get('city') }}, {{ data.get('client').get('country') }}, hereinafter referred to as <strong>"Client"</strong>.
+</p>
+<p>
+  This Contract outlines the terms and conditions under which the Provider agrees to deliver services to the Client, as detailed herein. Both parties affirm their mutual intent to abide by the terms outlined in this document. The effective date of this Contract shall be <strong>{{ data.get('contract').get('startDate') }}</strong>.
+</p>
+{% endif %}
+{% else %}
+<p><em>Información del contrato incompleta o no encontrada.</em></p>
 {% endif %}
 
-
+</div>
+<div class="contract-section">
   {% if data and data.get('company') %}
     {% if lang == 'esp' %}
       <h2>1. Información de la Compañía</h2>
-      <p><strong>Nombre:</strong> {{ data.get('company').get('name') }}</p>
-      <p><strong>RUC:</strong> {{ data.get('company').get('ruc') }}</p>
-      <p><strong>Tax ID:</strong> {{ data.get('company').get('taxId') }}</p>
-      <p><strong>Dirección:</strong> {{ data.get('company').get('address') }}</p>
-      <p><strong>Ciudad:</strong> {{ data.get('company').get('city') }}</p>
-      <p><strong>País:</strong> {{ data.get('company').get('country') }}</p>
-      <p><strong>Telefono:</strong> {{ data.get('company').get('phone') }}</p>
-      <p><strong>Pagina web:</strong> {{ data.get('company').get('website') }}</p>
-      <p><strong>Correo:</strong> {{ data.get('company').get('email') }}</p>
+<ul>
+  <li><strong>Nombre:</strong> {{ data.get('company').get('name') }}</li>
+  <li><strong>RUC:</strong> {{ data.get('company').get('ruc') }}</li>
+  <li><strong>Tax ID:</strong> {{ data.get('company').get('taxId') }}</li>
+  <li><strong>Dirección:</strong> {{ data.get('company').get('address') }}</li>
+  <li><strong>Ciudad:</strong> {{ data.get('company').get('city') }}</li>
+  <li><strong>País:</strong> {{ data.get('company').get('country') }}</li>
+  <li><strong>Telefono:</strong> {{ data.get('company').get('phone') }}</li>
+  <li><strong>Pagina web:</strong> {{ data.get('company').get('website') }}</li>
+  <li><strong>Correo:</strong> {{ data.get('company').get('email') }}</li>
+</ul>
     {% else %}
-      <h2>1. Company Information</h2>
-      <p><strong>Name:</strong> {{ data.get('company').get('name') }}</p>
-      <p><strong>RUC:</strong> {{ data.get('company').get('ruc') }}</p>
-      <p><strong>Tax ID:</strong> {{ data.get('company').get('taxId') }}</p>
-      <p><strong>Address:</strong> {{ data.get('company').get('address') }}</p>
-      <p><strong>City:</strong> {{ data.get('company').get('city') }}</p>
-      <p><strong>Country:</strong> {{ data.get('company').get('country') }}</p>
-      <p><strong>Phone:</strong> {{ data.get('company').get('phone') }}</p>
-      <p><strong>Website:</strong> {{ data.get('company').get('website') }}</p>
-      <p><strong>Email:</strong> {{ data.get('company').get('email') }}</p>
+    <h2>1. Company Information</h2>
+    <ul>
+      <li><strong>Name:</strong> {{ data.get('company').get('name')}}</li>
+      <li><strong>RUC:</strong> {{ data.get('company').get('ruc') }}</li>
+      <li><strong>Tax ID:</strong> {{ data.get('company').get('taxId') }}</li>
+      <li><strong>Address:</strong> {{ data.get('company').get('address') }}</li>
+      <li><strong>City:</strong> {{ data.get('company').get('city') }}</li>
+      <li><strong>Country:</strong> {{ data.get('company').get('country') }}</li>
+      <li><strong>Phone:</strong> {{ data.get('company').get('phone') }}</li>
+      <li><strong>Website:</strong> {{ data.get('company').get('website') }}</li>
+      <li><strong>Email:</strong> {{ data.get('company').get('email') }}</li>
+    </ul>
     {% endif %}
   {% else %}
     <p><em>No se encontró información de la compañía.</em></p>
   {% endif %}
-
+</div>
+<div class="contract-section">
   {% if data and data.get('client') %}
-    {% if lang == 'esp' %}
-      <h2>2. Información del Cliente</h2>
-      <p><strong>Nombre:</strong> {{ data.get('client').get('name') }}</p>
-      <p><strong>RUC:</strong> {{ data.get('client').get('ruc') }}</p>
-      <p><strong>Dirección:</strong> {{ data.get('client').get('address') }}</p>
-      <p><strong>Ciudad:</strong> {{ data.get('client').get('city') }}</p>
-      <p><strong>País:</strong> {{ data.get('client').get('country') }}</p>
-    {% else %}
-      <h2>2. Client Information</h2>
-      <p><strong>Name:</strong> {{ data.get('client').get('name') }}</p>
-      <p><strong>RUC:</strong> {{ data.get('client').get('ruc') }}</p>
-      <p><strong>Address:</strong> {{ data.get('client').get('address') }}</p>
-      <p><strong>City:</strong> {{ data.get('client').get('city') }}</p>
-      <p><strong>Country:</strong> {{ data.get('client').get('country') }}</p>
-    {% endif %}
-  {% else %}
-    <p><em>No se encontró información del cliente.</em></p>
-  {% endif %}
-
   {% if lang == 'esp' %}
-    <h2>3. Descripción de Servicios e Items</h2>
+    <h2>2. Información del Cliente</h2>
+<ul>
+  <li><strong>Nombre:</strong> {{ data.get('client').get('name') }}</li>
+  <li><strong>RUC:</strong> {{ data.get('client').get('ruc') }}</li>
+  <li><strong>Dirección:</strong> {{ data.get('client').get('address') }}</li>
+  <li><strong>Ciudad:</strong> {{ data.get('client').get('city') }}</li>
+  <li><strong>País:</strong> {{ data.get('client').get('country') }}</li>
+</ul>
   {% else %}
-    <h2>3. Description of Services & Items</h2>
+    <h2>2. Client Information</h2>
+    <ul>
+      <li><strong>Name:</strong> {{ data.get('client').get('name') }}</li>
+      <li><strong>RUC:</strong> {{ data.get('client').get('ruc') }}</li>
+      <li><strong>Address:</strong> {{ data.get('client').get('address') }}</li>
+      <li><strong>City:</strong> {{ data.get('client').get('city') }}</li>
+      <li><strong>Country:</strong> {{ data.get('client').get('country') }}</li>
+    </ul>
   {% endif %}
-  <table>
-    <thead>
-      <tr>
-        {% if lang == 'esp' %}
-          <th>Código</th>
-          <th>Descripción</th>
-          <th>HES</th>
-          <th>Cantidad</th>
-          <th>Costo Unitario (USD)</th>
-          <th>Costo (USD)</th>
-        {% else %}
-          <th>Code</th>
-          <th>Description</th>
-          <th>HES</th>
-          <th>Quantity</th>
-          <th>Unit Cost (USD)</th>
-          <th>Cost (USD)</th>
-        {% endif %}
-      </tr>
-    </thead>
-    <tbody>
-      {% if data and data.get('items') %}
-        {% for item in data.get('items') %}
-          <tr>
-            <td>{{ item.code }}</td>
-            <td>{{ item.description }}</td>
-            <td>{{ item.hes }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ "%.2f"|format(item.unitCost) }}</td>
-            <td>{{ "%.2f"|format(item.cost) }}</td>
-          </tr>
-        {% endfor %}
+{% else %}
+  <p><em>No se encontró información del cliente.</em></p>
+{% endif %}
+</div>
+<div class="contract-section">
+  {% if lang == 'esp' %}
+  <h2>3. Descripción de Servicios e Items</h2>
+{% else %}
+  <h2>3. Description of Services & Items</h2>
+{% endif %}
+<table>
+  <thead>
+    <tr>
+      {% if lang == 'esp' %}
+        <th>Código</th>
+        <th>Descripción</th>
+        <th>HES</th>
+        <th>Cantidad</th>
+        <th>Costo Unitario (USD)</th>
+        <th>Costo (USD)</th>
       {% else %}
+        <th>Code</th>
+        <th>Description</th>
+        <th>HES</th>
+        <th>Quantity</th>
+        <th>Unit Cost (USD)</th>
+        <th>Cost (USD)</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% if data and data.get('items') %}
+      {% for item in data.get('items') %}
         <tr>
-          <td colspan="6">
-            {% if lang == 'esp' %}
-              No hay items disponibles
-            {% else %}
-              No items available
-            {% endif %}
-          </td>
+          <td>{{ item.code }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.hes }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ "%.2f"|format(item.unitCost) }}</td>
+          <td>{{ "%.2f"|format(item.cost) }}</td>
         </tr>
-      {% endif %}
-    </tbody>
-  </table>
-
-  {% if lang == 'esp' %}
-    <h2>4. Condiciones de Pago</h2>
-    <p>Las partes acuerdan las siguientes condiciones de pago basadas en los items y servicios descritos:</p>
-  {% else %}
-    <h2>4. Payment Terms</h2>
-    <p>The parties agree to the following payment terms based on the items and services described:</p>
-  {% endif %}
-
-  <ul>
-    {% if data and data.get('totals') %}
-      {% if lang == 'esp' %}
-        <li><strong>Subtotal (sin impuestos):</strong> USD {{ "%.2f"|format(data.get('totals').get('beforeTax')) }}</li>
-        <li><strong>Tasa de impuesto:</strong> {{ data.get('totals').get('taxRate') }}%</li>
-        <li><strong>Monto de impuesto:</strong> USD {{ "%.2f"|format(data.get('totals').get('tax')) }}</li>
-        <li><strong>Total a Pagar:</strong> USD {{ "%.2f"|format(data.get('totals').get('totalDue')) }}</li>
-      {% else %}
-        <li><strong>Subtotal (before tax):</strong> USD {{ "%.2f"|format(data.get('totals').get('beforeTax')) }}</li>
-        <li><strong>Tax Rate:</strong> {{ data.get('totals').get('taxRate') }}%</li>
-        <li><strong>Tax Amount:</strong> USD {{ "%.2f"|format(data.get('totals').get('tax')) }}</li>
-        <li><strong>Total Due:</strong> USD {{ "%.2f"|format(data.get('totals').get('totalDue')) }}</li>
-      {% endif %}
+      {% endfor %}
     {% else %}
-      {% if lang == 'esp' %}
-        <li>No hay información de totales</li>
-      {% else %}
-        <li>No totals information available</li>
-      {% endif %}
+      <tr>
+        <td colspan="6">
+          {% if lang == 'esp' %}
+            No hay items disponibles
+          {% else %}
+            No items available
+          {% endif %}
+        </td>
+      </tr>
     {% endif %}
-  </ul>
+  </tbody>
+</table>
+</div>
+<div class="contract-section">
+  {% if lang == 'esp' %}
+  <h2>4. Condiciones de Pago</h2>
+  <p>Las partes acuerdan las siguientes condiciones de pago basadas en los items y servicios descritos:</p>
+{% else %}
+  <h2>4. Payment Terms</h2>
+  <p>The parties agree to the following payment terms based on the items and services described:</p>
+{% endif %}
 
+<ul>
+  {% if data and data.get('totals') %}
+    {% if lang == 'esp' %}
+      <li><strong>Subtotal (sin impuestos):</strong> USD {{ "%.2f"|format(data.get('totals').get('beforeTax')) }}</li>
+      <li><strong>Tasa de impuesto:</strong> {{ data.get('totals').get('taxRate') }}%</li>
+      <li><strong>Monto de impuesto:</strong> USD {{ "%.2f"|format(data.get('totals').get('tax')) }}</li>
+      <li><strong>Total a Pagar:</strong> USD {{ "%.2f"|format(data.get('totals').get('totalDue')) }}</li>
+    {% else %}
+      <li><strong>Subtotal (before tax):</strong> USD {{ "%.2f"|format(data.get('totals').get('beforeTax')) }}</li>
+      <li><strong>Tax Rate:</strong> {{ data.get('totals').get('taxRate') }}%</li>
+      <li><strong>Tax Amount:</strong> USD {{ "%.2f"|format(data.get('totals').get('tax')) }}</li>
+      <li><strong>Total Due:</strong> USD {{ "%.2f"|format(data.get('totals').get('totalDue')) }}</li>
+    {% endif %}
+  {% else %}
+    {% if lang == 'esp' %}
+      <li>No hay información de totales</li>
+    {% else %}
+      <li>No totals information available</li>
+    {% endif %}
+  {% endif %}
+</ul>
+</div>
+<div class="page-break"></div>
+<div class="contract-section-two">
   {% if data and data.get('contract') %}
-    {% if lang == 'esp' %}
-      <h2>5. Detalles del Contrato</h2>
-      <ul>
-        <li><strong>Número de Contrato:</strong> {{ data.get('contract').get('number') }}</li>
-        <li><strong>Número de Orden:</strong> {{ data.get('contract').get('orderNumber') }}</li>
-        <li><strong>Número de Factura:</strong> {{ data.get('contract').get('invoiceNumber') }}</li>
-        <li><strong>HES:</strong> {{ data.get('contract').get('hes') }}</li>
-        <li><strong>Fecha de Finalización:</strong> {{ data.get('contract').get('endDate') }}</li>
-      </ul>
-
-    {% else %}
-      <h2>5. Contract Details</h2>
-      <ul>
-        <li><strong>Contract Number:</strong> {{ data.get('contract').get('number') }}</li>
-        <li><strong>Order Number:</strong> {{ data.get('contract').get('orderNumber') }}</li>
-        <li><strong>Invoice Number:</strong> {{ data.get('contract').get('invoiceNumber') }}</li>
-        <li><strong>HES:</strong> {{ data.get('contract').get('hes') }}</li>
-        <li><strong>End Date:</strong> {{ data.get('contract').get('endDate') }}</li>
-      </ul>
-    {% endif %}
-  {% else %}
-    {% if lang == 'esp' %}
-      <p><em>No hay detalles de contrato adicionales.</em></p>
-    {% else %}
-      <p><em>No additional contract details found.</em></p>
-    {% endif %}
-  {% endif %}
-
   {% if lang == 'esp' %}
-    <h2>6. Duración y Terminación</h2>
-    <p>Este Contrato dará comienzo en la fecha en que ambas partes lo firmen y permanecerá vigente hasta que se cumplan todos los servicios y obligaciones, a menos que se rescinda antes por mutuo acuerdo o por las leyes aplicables.</p>
-  {% else %}
-    <h2>6. Term and Termination</h2>
-    <p>This Contract shall commence on the date both parties have signed and shall remain in effect until all services and obligations have been fulfilled, unless terminated earlier by mutual written agreement or by any applicable laws.</p>
-  {% endif %}
+    <h2>5. Detalles del Contrato</h2>
+    <ul>
+      <li><strong>Número de Contrato:</strong> {{ data.get('contract').get('number') }}</li>
+      <li><strong>Número de Orden:</strong> {{ data.get('contract').get('orderNumber') }}</li>
+      <li><strong>Número de Factura:</strong> {{ data.get('contract').get('invoiceNumber') }}</li>
+      <li><strong>HES:</strong> {{ data.get('contract').get('hes') }}</li>
+      <li><strong>Fecha de Finalización:</strong> {{ data.get('contract').get('endDate') }}</li>
+    </ul>
 
+  {% else %}
+    <h2>5. Contract Details</h2>
+    <ul>
+      <li><strong>Contract Number:</strong> {{ data.get('contract').get('number') }}</li>
+      <li><strong>Order Number:</strong> {{ data.get('contract').get('orderNumber') }}</li>
+      <li><strong>Invoice Number:</strong> {{ data.get('contract').get('invoiceNumber') }}</li>
+      <li><strong>HES:</strong> {{ data.get('contract').get('hes') }}</li>
+      <li><strong>End Date:</strong> {{ data.get('contract').get('endDate') }}</li>
+    </ul>
+  {% endif %}
+{% else %}
   {% if lang == 'esp' %}
-    <h2>7. Legislación Aplicable</h2>
-    <p>Este Contrato se regirá e interpretará de conformidad con las leyes aplicables en la jurisdicción correspondiente, salvo que se indique lo contrario o lo exijan los estatutos locales.</p>
+    <p><em>No hay detalles de contrato adicionales.</em></p>
   {% else %}
-    <h2>7. Governing Law</h2>
-    <p>This Contract shall be governed by and construed in accordance with the laws applicable in the relevant jurisdiction, unless otherwise stated or required by local statutes.</p>
+    <p><em>No additional contract details found.</em></p>
   {% endif %}
-
+{% endif %}
+</div>
+<div class="contract-section">
   {% if lang == 'esp' %}
-    <h2>8. Acuerdo Completo</h2>
-    <p>Este Contrato constituye el acuerdo completo entre las partes en relación con el objeto del mismo y reemplaza todas las negociaciones, arreglos y entendimientos anteriores, sean orales o escritos.</p>
-    <p>Al firmar a continuación, ambas partes reconocen que han leído y aceptado los términos y condiciones establecidos en este Contrato.</p>
-  {% else %}
-    <h2>8. Entire Agreement</h2>
-    <p>This Contract constitutes the entire agreement between the parties relating to the subject matter hereof and supersedes all prior negotiations, arrangements, and understandings, whether oral or written.</p>
-    <p>By signing below, both parties acknowledge that they have read and agreed to the terms and conditions set forth in this Contract.</p>
-  {% endif %}
-
+  <h2>6. Duración y Terminación</h2>
+  <p>Este Contrato dará comienzo en la fecha en que ambas partes lo firmen y permanecerá vigente hasta que se cumplan todos los servicios y obligaciones, a menos que se rescinda antes por mutuo acuerdo o por las leyes aplicables.</p>
+{% else %}
+  <h2>6. Term and Termination</h2>
+  <p>This Contract shall commence on the date both parties have signed and shall remain in effect until all services and obligations have been fulfilled, unless terminated earlier by mutual written agreement or by any applicable laws.</p>
+{% endif %}
+</div>
+<div class="contract-section">
+  {% if lang == 'esp' %}
+  <h2>7. Legislación Aplicable</h2>
+  <p>Este Contrato se regirá e interpretará de conformidad con las leyes aplicables en la jurisdicción correspondiente, salvo que se indique lo contrario o lo exijan los estatutos locales.</p>
+{% else %}
+  <h2>7. Governing Law</h2>
+  <p>This Contract shall be governed by and construed in accordance with the laws applicable in the relevant jurisdiction, unless otherwise stated or required by local statutes.</p>
+{% endif %}
+</div>
+<div class="contract-section">
+  {% if lang == 'esp' %}
+  <h2>8. Acuerdo Completo</h2>
+  <p>Este Contrato constituye el acuerdo completo entre las partes en relación con el objeto del mismo y reemplaza todas las negociaciones, arreglos y entendimientos anteriores, sean orales o escritos.</p>
+  <p>Al firmar a continuación, ambas partes reconocen que han leído y aceptado los términos y condiciones establecidos en este Contrato.</p>
+{% else %}
+  <h2>8. Entire Agreement</h2>
+  <p>This Contract constitutes the entire agreement between the parties relating to the subject matter hereof and supersedes all prior negotiations, arrangements, and understandings, whether oral or written.</p>
+  <p>By signing below, both parties acknowledge that they have read and agreed to the terms and conditions set forth in this Contract.</p>
+{% endif %}
+</div>
+<div class="contract-section">
   <h2 class="signature">
     {% if lang == 'esp' %}
       9. Firmas
+<!-- Contenedor flex para alinear las firmas lado a lado -->
+<div style="display: flex; gap: 50px; margin-top: 20px;">
+
+  <!-- 1. Firma del empleado de ENAP (employee_name) -->
+  {% if data and data.get('client') and data.get('client').get('employee_name') %}
+    <div style="text-align: center;">
+      <p class="line"><strong>{{ data.get('client').get('employee_name') }}</strong></p>
+      <!-- Firma (si existe la ruta) -->
+      {% if data.get('client').get('employee_signature') %}
+        <img src="{{ url_for('static', filename='signatures/es/' +data.get('client').get('employee_signature')) }}"
+             alt="Firma Persona a cargo"
+             style="max-width: 150px; max-height: 80px;">
+      {% else %}
+        <p>
+          {% if lang == 'esp' %}
+            (No se encontró la firma)
+          {% else %}
+            (Signature not found)
+          {% endif %}
+        </p>
+      {% endif %}
+
+      <!-- Línea de referencia si gustas -->
+      <p class="line">________________________</p>
+      {% if data and data.get('client') and data.get('client').get('employee_position') %}
+      <p class="line">
+        {% if data.get('client').get('employee_position') %}
+          {{ data.get('client').get('employee_position') }}
+        {% else %}
+          {% if lang == 'esp' %}
+            (Sin puesto definido)
+          {% else %}
+            (No position defined)
+          {% endif %}
+        {% endif %}
+      </p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <!-- 2. Firma de la persona a cargo (in_charge_info) -->
+  {% if data and data.get('client') and data.get('client').get('in_charge_info') %}
+    <div style="text-align: center; padding-left: 20px;">
+      <p class="line"><strong>{{ data.get('client').get('in_charge_info').get('name') }}</strong></p>
+      <!-- Firma (si existe la ruta) -->
+      {% if data.get('client').get('in_charge_info').get('signature') %}
+        <img src="{{ url_for('static', filename='signatures/es/' + data.get('client').get('in_charge_info').get('signature')) }}"
+             alt="Firma Persona a cargo"
+             style="max-width: 150px; max-height: 80px;">
+      {% else %}
+        <p>
+          {% if lang == 'esp' %}
+            (No se encontró la firma)
+          {% else %}
+            (Signature not found)
+          {% endif %}
+        </p>
+      {% endif %}
+
+      <!-- Línea de referencia si gustas -->
+      <p class="line">________________________</p>
+      {% if data and data.get('client') and data.get('client').get('in_charge_info') %}
+
+      <p class="line">
+        {% if data.get('client').get('in_charge_info').get('position') %}
+          {{ data.get('client').get('in_charge_info').get('position') }}
+        {% else %}
+          {% if lang == 'esp' %}
+            (Sin puesto definido)
+          {% else %}
+            (No position defined)
+          {% endif %}
+        {% endif %}
+      </p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+<p style="margin-top: 20px;">
+  <strong>
+    {% if lang == 'esp' %}
+      Fecha:
+    {% else %}
+      Date:
+    {% endif %}
+  </strong>
+  {{ data.get('contract').get('startDate') }}
+</p>
     {% else %}
       9. Signatures
+
+<!-- Contenedor flex para alinear las firmas lado a lado -->
+<div style="display: flex; gap: 50px; margin-top: 20px;">
+
+  <!-- 1. Firma del empleado de ENAP (employee_name) -->
+  {% if data and data.get('client') and data.get('client').get('employee_name') %}
+    <div style="text-align: center;">
+      <p class="line"><strong>{{ data.get('client').get('employee_name') }}</strong></p>
+      <!-- Firma (si existe la ruta) -->
+      {% if data.get('client').get('employee_signature') %}
+        <img src="{{ url_for('static', filename='signatures/en/' +data.get('client').get('employee_signature')) }}"
+             alt="Firma Persona a cargo"
+             style="max-width: 150px; max-height: 80px;">
+      {% else %}
+        <p>
+          {% if lang == 'esp' %}
+            (No se encontró la firma)
+          {% else %}
+            (Signature not found)
+          {% endif %}
+        </p>
+      {% endif %}
+
+      <!-- Línea de referencia si gustas -->
+      <p class="line">________________________</p>
+      {% if data and data.get('client') and data.get('client').get('employee_position') %}
+      <p class="line">
+        {% if data.get('client').get('employee_position') %}
+          {{ data.get('client').get('employee_position') }}
+        {% else %}
+          {% if lang == 'esp' %}
+            (Sin puesto definido)
+          {% else %}
+            (No position defined)
+          {% endif %}
+        {% endif %}
+      </p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <!-- 2. Firma de la persona a cargo (in_charge_info) -->
+  {% if data and data.get('client') and data.get('client').get('in_charge_info') %}
+    <div style="text-align: center; padding-left: 20px;">
+      <p class=line><strong>{{ data.get('client').get('in_charge_info').get('name') }}</strong></p>
+      <!-- Firma (si existe la ruta) -->
+      {% if data.get('client').get('in_charge_info').get('signature') %}
+        <img src="{{ url_for('static', filename='signatures/en/' +data.get('client').get('in_charge_info').get('signature')) }}"
+             alt="Firma Persona a cargo"
+             style="max-width: 150px; max-height: 80px;">
+      {% else %}
+        <p>
+          {% if lang == 'esp' %}
+            (No se encontró la firma)
+          {% else %}
+            (Signature not found)
+          {% endif %}
+        </p>
+      {% endif %}
+
+      <!-- Línea de referencia si gustas -->
+      <p class="line">________________________</p>
+      {% if data and data.get('client') and data.get('client').get('in_charge_info') %}
+
+      <p class="line">
+        {% if data.get('client').get('in_charge_info').get('position') %}
+          {{ data.get('client').get('in_charge_info').get('position') }}
+        {% else %}
+          {% if lang == 'esp' %}
+            (Sin puesto definido)
+          {% else %}
+            (No position defined)
+          {% endif %}
+        {% endif %}
+      </p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+<p style="margin-top: 20px; font-size:small;">
+  <strong>
+    {% if lang == 'esp' %}
+      Fecha:
+    {% else %}
+      Date:
+    {% endif %}
+  </strong>
+  {{ data.get('contract').get('startDate') }}
+</p>
     {% endif %}
   </h3>
 
-  <!-- Contenedor flex para alinear las firmas lado a lado -->
-  <div style="display: flex; gap: 50px; margin-top: 20px;">
-
-    <!-- 1. Firma del empleado de ENAP (employee_name) -->
-    {% if data and data.get('client') and data.get('client').get('employee_name') %}
-      <div style="text-align: center;">
-        <p><strong>{{ data.get('client').get('employee_name') }}</strong></p>
-        <!-- Firma (si existe la ruta) -->
-        {% if data.get('client').get('employee_signature') %}
-          <img src="{{ data.get('client').get('employee_signature') }}"
-               alt="Firma Persona a cargo"
-               style="max-width: 150px; max-height: 80px;">
-        {% else %}
-          <p>
-            {% if lang == 'esp' %}
-              (No se encontró la firma)
-            {% else %}
-              (Signature not found)
-            {% endif %}
-          </p>
-        {% endif %}
-
-        <!-- Línea de referencia si gustas -->
-        <p class="line">________________________</p>
-        {% if data and data.get('client') and data.get('client').get('employee_position') %}
-        <p>
-          {% if data.get('client').get('employee_position') %}
-            {{ data.get('client').get('employee_position') }}
-          {% else %}
-            {% if lang == 'esp' %}
-              (Sin puesto definido)
-            {% else %}
-              (No position defined)
-            {% endif %}
-          {% endif %}
-        </p>
-        {% endif %}
-      </div>
-    {% endif %}
-
-    <!-- 2. Firma de la persona a cargo (in_charge_info) -->
-    {% if data and data.get('client') and data.get('client').get('in_charge_info') %}
-      <div style="text-align: center;">
-        <p><strong>{{ data.get('client').get('in_charge_info').get('name') }}</strong></p>
-        <!-- Firma (si existe la ruta) -->
-        {% if data.get('client').get('in_charge_info').get('signature') %}
-          <img src="{{ data.get('client').get('in_charge_info').get('signature') }}"
-               alt="Firma Persona a cargo"
-               style="max-width: 150px; max-height: 80px;">
-        {% else %}
-          <p>
-            {% if lang == 'esp' %}
-              (No se encontró la firma)
-            {% else %}
-              (Signature not found)
-            {% endif %}
-          </p>
-        {% endif %}
-
-        <!-- Línea de referencia si gustas -->
-        <p class="line">________________________</p>
-        {% if data and data.get('client') and data.get('client').get('in_charge_info') %}
-
-        <p>
-          {% if data.get('client').get('in_charge_info').get('position') %}
-            {{ data.get('client').get('in_charge_info').get('position') }}
-          {% else %}
-            {% if lang == 'esp' %}
-              (Sin puesto definido)
-            {% else %}
-              (No position defined)
-            {% endif %}
-          {% endif %}
-        </p>
-        {% endif %}
-      </div>
-    {% endif %}
-  </div>
-
-  <p style="margin-top: 20px;">
-    <strong>
-      {% if lang == 'esp' %}
-        Fecha:
-      {% else %}
-        Date:
-      {% endif %}
-    </strong>
-    {{ data.get('contract').get('startDate') }}
-  </p>
-
+</div>
 </body>
 </html>
 
