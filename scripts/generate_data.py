@@ -42,14 +42,16 @@ ACCOUNTING_POSITIONS_ES = [
 
 SIGNATURE_DIR = "../static/signatures"
 
-def generate_signature(name, filename):
-    """Generar una imagen de firma realista basada en un nombre."""
-    if not os.path.exists(SIGNATURE_DIR):
-        os.makedirs(SIGNATURE_DIR)
+def generate_signature(name, filename, lang="en"):
+    """Generar una imagen de firma realista basada en un nombre y guardar en carpetas según idioma."""
+    # Directorio específico para el idioma
+    lang_dir = os.path.join(SIGNATURE_DIR, lang)
+    if not os.path.exists(lang_dir):
+        os.makedirs(lang_dir)
 
     # Ruta a la fuente de firma (asegúrate de que exista)
     font_path = "../static/fonts/signature.ttf"
-    image_path = os.path.join(SIGNATURE_DIR, filename)
+    image_path = os.path.join(lang_dir, filename)
 
     try:
         # Crear una imagen en blanco
@@ -68,6 +70,7 @@ def generate_signature(name, filename):
     except Exception as e:
         print(f"Error al generar firma: {e}")
         return None
+
 
 def generate_hes(index):
     last3 = str(index + 1).zfill(3)
@@ -115,7 +118,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
         enap_employee_name_en = fake_en.name()
         enap_employee_position_en = random.choice(ACCOUNTING_POSITIONS_EN)
         enap_signature_filename_en = f"enap_signature_{i+1}.png"
-        enap_signature_path_en = generate_signature(enap_employee_name_en, enap_signature_filename_en)
+        enap_signature_path_en = generate_signature(enap_employee_name_en, enap_signature_filename_en, lang="en")
 
         client_data_en = dict(base_client_data_en)
         client_data_en["employee_name"] = enap_employee_name_en
@@ -125,7 +128,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
         in_charge_name_en = fake_en.name()
         in_charge_position_en = random.choice(ACCOUNTING_POSITIONS_EN)
         generic_signature_filename_en = f"signature{i+1}_.png"
-        signature_path_en = generate_signature(in_charge_name_en, generic_signature_filename_en)
+        signature_path_en = generate_signature(in_charge_name_en, generic_signature_filename_en, lang="en")
 
         client_data_en["in_charge_info"] = {
             "name": in_charge_name_en,
@@ -189,6 +192,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
             "totals": invoice_en["totals"],
             "contract": {
                 "number": f"CNT-{i+1:03}",
+                "startDate": invoice_en["invoice"]["date"],
                 "endDate": (invoice_date_obj + timedelta(days=random.randint(1, 365))).isoformat(),
                 "invoiceNumber": invoice_en["invoice"]["number"],
                 "hes": invoice_en["items"][0]["hes"],
@@ -249,7 +253,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
         enap_employee_name_esp = fake_es.name()
         enap_employee_position_esp = random.choice(ACCOUNTING_POSITIONS_ES)
         enap_signature_filename_esp = f"enap_signature_{i+1}.png"
-        enap_signature_path_esp = generate_signature(enap_employee_name_esp, enap_signature_filename_esp)
+        enap_signature_path_esp = generate_signature(enap_employee_name_esp, enap_signature_filename_esp, lang="es")
 
         client_data_esp = dict(base_client_data_esp)
         client_data_esp["employee_name"] = enap_employee_name_esp
@@ -259,7 +263,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
         in_charge_name_esp = fake_es.name()
         in_charge_position_esp = random.choice(ACCOUNTING_POSITIONS_ES)
         generic_signature_filename_esp = f"signature{i+1}_.png"
-        signature_path_esp = generate_signature(in_charge_name_esp, generic_signature_filename_esp)
+        signature_path_esp = generate_signature(in_charge_name_esp, generic_signature_filename_esp, lang="es")
 
         client_data_esp["in_charge_info"] = {
             "name": in_charge_name_esp,
@@ -323,6 +327,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
             "totals": invoice_esp["totals"],
             "contract": {
                 "number": f"CNT-{i+1:03}",
+                "startDate": invoice_esp["invoice"]["date"],
                 "endDate": (invoice_date_obj + timedelta(days=random.randint(1, 365))).isoformat(),
                 "invoiceNumber": invoice_esp["invoice"]["number"],
                 "hes": invoice_esp["items"][0]["hes"],

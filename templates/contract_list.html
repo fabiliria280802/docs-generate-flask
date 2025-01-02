@@ -53,10 +53,10 @@
     </div>
     {% for contract in contracts %}
 <div class="contract-item">
-    <h3>Contrato #{{ loop.index + 1 }}</h3>
+    <h3>Contrato #{{ loop.index }}</h3>
     <p><strong>Cliente:</strong> {{ contract.company.name }}</p>
     <p><strong>RUC:</strong> {{ contract.company.ruc }}</p>
-    <p><strong>HES:</strong> {{ contract.items.hes }}</p>
+    <p><strong>Country:</strong> {{ contract.company.country }}</p>
     <div class="actions">
         <a href="{{ url_for('show_contract', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Ver</a>
         <a href="{{ url_for('generate_contract', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Generar PDF</a>

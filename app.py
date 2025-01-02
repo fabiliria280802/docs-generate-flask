@@ -119,7 +119,9 @@ def show_contract(index):
         total_images = 21
         image_index = (index % total_images) + 1 
 
-        return render_template('contract.html', data=contract, image_index=image_index)
+        current_lang = request.args.get('lang', 'eng')
+
+        return render_template('contract.html', data=contract, image_index=image_index,lang=current_lang)
     except IndexError:
         return "Factura no encontrada", 404
 
@@ -134,7 +136,9 @@ def show_delivery(index):
         total_images = 21
         image_index = (index % total_images) + 1 
 
-        return render_template('deliveryReceipt.html', data=delivery, image_index=image_index)
+        current_lang = request.args.get('lang', 'eng')
+
+        return render_template('deliveryReceipt.html', data=delivery, image_index=image_index,lang=current_lang)
     except IndexError:
         return "Factura no encontrada", 404
 
