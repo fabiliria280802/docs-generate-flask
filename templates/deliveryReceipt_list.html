@@ -55,8 +55,8 @@
         <p><strong>Cliente:</strong> {{ delivery.receiver.name }}</p>
         <p><strong>Fecha:</strong> {{ delivery.receiver.date }}</p>
         <div class="actions">
-            <a href="{{ url_for('show_delivery', index=loop.index0), lang=request.args.get('lang', 'eng') }}" class="button">Ver</a>
-            <a href="{{ url_for('generate_delivery', index=loop.index0), lang=request.args.get('lang', 'eng') }}" class="button">Generar PDF</a>
+            <a href="{{ url_for('show_delivery', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Ver</a>
+            <a href="{{ url_for('generate_delivery', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Generar PDF</a>
         </div>
     </div>
     {% endfor %}

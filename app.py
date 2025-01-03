@@ -156,6 +156,95 @@ def generate_contract_xml(contract_data, xml_path):
     with open(xml_path, 'w', encoding='utf-8') as f:
         f.write(formatted_xml)
 
+def generate_delivery_xml(delivery_data, xml_path):
+    xml = dicttoxml(delivery_data, custom_root='delivery', attr_type=False)
+    dom = parseString(xml)
+    formatted_xml = dom.toprettyxml(indent="    ")
+    with open(xml_path, 'w', encoding='utf-8') as f:
+        f.write(formatted_xml)
+
+@app.route('/generate_all_deliveries')
+def generate_all_deliveries():
+    delivery_data = get_data('delivery')
+    if delivery_data is None:
+        return "Error: No se pudo cargar los datos de las actas de entrega", 500
+
+    generated_files = {
+        'pdf': [],
+        'png': [],
+        'xml': []
+    }
+    base_url = request.host_url.rstrip('/')
+
+    for index, delivery in enumerate(delivery_data['deliveries']):
+        try:
+            image_index = (index % 21) + 1
+            rendered = render_template('delivery.html', data=delivery, image_index=image_index)
+
+            # Generar PDF
+            pdf_filename = f"delivery_{delivery['receiver']['invoiceNumber']}.pdf"
+            pdf_path = os.path.join('examples', 'deliveries', 'pdf', pdf_filename)
+            HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
+            generated_files['pdf'].append(pdf_filename)
+
+            # Generar PNG
+            png_filename = f"delivery_{delivery['receiver']['invoiceNumber']}.png"
+            png_path = os.path.join('examples', 'deliveries', 'png', png_filename)
+            pdf_to_png(pdf_path, png_path)
+            generated_files['png'].append(png_filename)
+
+            # Generar XML
+            xml_filename = f"delivery_{delivery['receiver']['invoiceNumber']}.xml"
+            xml_path = os.path.join('examples', 'deliveries', 'xml', xml_filename)
+            generate_delivery_xml(delivery, xml_path)
+            generated_files['xml'].append(xml_filename)
+        except Exception as e:
+            print(f"Error generando acta de entrega {index}: {e}")
+            continue
+
+    return jsonify({
+        "message": "Todas las actas de entrega fueron generadas con éxito en PDF, PNG y XML",
+        "files": generated_files,
+        "locations": {
+            "pdf": "examples/deliveries/pdf/",
+            "png": "examples/deliveries/png/",
+            "xml": "examples/deliveries/xml/"
+        }
+    })
+
+
+@app.route('/generate_delivery/<int:index>')
+def generate_delivery(index):
+    delivery_data = get_data('delivery')
+    if delivery_data is None:
+        return "Error: No se pudo cargar los datos de las facturas", 500
+
+    try:
+        delivery = delivery_data['deliveries'][index]
+        total_images = 21
+        image_index = (index % total_images) + 1
+        rendered = render_template('delivery.html', data=delivery, image_index=image_index)
+
+        # Generar PDF
+        pdf_filename = f"delivery_{delivery['delivery']['number']}.pdf"
+        pdf_path = os.path.join('examples', 'deliveries', 'pdf', pdf_filename)
+        base_url = request.host_url.rstrip('/')
+        HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
+
+        # Generar PNG
+        png_filename = f"delivery_{delivery['delivery']['number']}.png"
+        png_path = os.path.join('examples', 'deliveries', 'png', png_filename)
+        pdf_to_png(pdf_path, png_path)
+
+        # Generar XML
+        xml_filename = f"delivery_{delivery['delivery']['number']}.xml"
+        xml_path = os.path.join('examples', 'deliveries', 'xml', xml_filename)
+        generate_delivery_xml(invoice, xml_path)
+
+        return f"Factura generada con éxito en PDF, PNG y XML"
+    except IndexError:
+        return "Factura no encontrada", 404
+
 @app.route('/generate_invoice/<int:index>')
 def generate_invoice(index):
     invoice_data = get_data('invoice')

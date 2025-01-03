@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acta de Recepción</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .signature {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .signature img {
+            max-width: 200px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="title">Acta de Recepción</div>
+
+    <div class="content">
+        <p>
+            En la fecha <strong>{{ data.receiver.date }}</strong>, la empresa <strong>{{ data.receiver.name }}</strong>
+            recibió de <strong>{{ data.receiver.from }}</strong> los bienes y/o servicios relacionados con
+            el pedido número <strong>{{ data.receiver.orderNumber }}</strong> bajo la factura número
+            <strong>{{ data.receiver.invoiceNumber }}</strong>. Este pedido tiene un HES asociado con el
+            número <strong>{{ data.receiver.hes }}</strong>, y su valor total asciende a <strong>USD {{ "%.2f"|format(data.receiver.price) }}</strong>.
+            El plazo finalizó el día <strong>{{ data.receiver.endDate }}</strong>.
+        </p>
+    </div>
+
+    <div class="signature">
+        <p><strong>{{ data.receiver.employee_name }}</strong></p>
+        <p>{{ data.receiver.employee_position }}</p>
+        {% if data.receiver.employee_signature %}
+            <img src="{{ url_for('static', filename='signatures/' + data.receiver.employee_signature) }}" alt="Firma">
+        {% else %}
+            <p>(Sin firma registrada)</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

@@ -36,7 +36,7 @@
     }
     .page-break {
       page-break-before: always;
-      padding-bottom: 20px; /* Fuerza un salto de página */
+      padding-bottom: 20px; 
     }
     h1{
       text-align: center;
@@ -71,17 +71,17 @@
       margin-bottom: 20px;
     }
     .contract-container, .contract-section, .contract-section-two, .table-section {
-      page-break-inside: avoid; /* Evita cortes dentro de secciones */
+      page-break-inside: avoid; 
   }
   .contract-section-two{
     padding-top:12mm;
   }
   table {
-    page-break-inside: auto; /* Permite cortes dentro de tablas */
+    page-break-inside: auto; 
   }
 
 tr, td, th {
-    page-break-inside: avoid; /* Evita cortes en filas individuales */
+    page-break-inside: avoid; 
 }
   </style>
 </head>
@@ -453,11 +453,9 @@ tr, td, th {
     </div>
   {% endif %}
 
-  <!-- 2. Firma de la persona a cargo (in_charge_info) -->
   {% if data and data.get('client') and data.get('client').get('in_charge_info') %}
     <div style="text-align: center; padding-left: 20px;">
       <p class=line><strong>{{ data.get('client').get('in_charge_info').get('name') }}</strong></p>
-      <!-- Firma (si existe la ruta) -->
       {% if data.get('client').get('in_charge_info').get('signature') %}
         <img src="{{ url_for('static', filename='signatures/en/' +data.get('client').get('in_charge_info').get('signature')) }}"
              alt="Firma Persona a cargo"
@@ -472,7 +470,6 @@ tr, td, th {
         </p>
       {% endif %}
 
-      <!-- Línea de referencia si gustas -->
       <p class="line">________________________</p>
       {% if data and data.get('client') and data.get('client').get('in_charge_info') %}
 
