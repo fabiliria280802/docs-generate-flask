@@ -36,7 +36,7 @@
     }
     .page-break {
       page-break-before: always;
-      padding-bottom: 20px; 
+      padding-bottom: 20px;
     }
     h1{
       text-align: center;
@@ -71,17 +71,21 @@
       margin-bottom: 20px;
     }
     .contract-container, .contract-section, .contract-section-two, .table-section {
-      page-break-inside: avoid; 
+      page-break-inside: avoid;
   }
   .contract-section-two{
     padding-top:12mm;
   }
   table {
-    page-break-inside: auto; 
+    page-break-inside: auto;
   }
 
 tr, td, th {
-    page-break-inside: avoid; 
+    page-break-inside: auto;
+}
+
+td {
+ 
 }
   </style>
 </head>
@@ -214,7 +218,7 @@ tr, td, th {
       {% endfor %}
     {% else %}
       <tr>
-        <td colspan="6">
+        <td colspan="5">
           {% if lang == 'esp' %}
             No hay items disponibles
           {% else %}
@@ -226,7 +230,8 @@ tr, td, th {
   </tbody>
 </table>
 </div>
-<div class="contract-section">
+<div class="page-break"></div>
+<div class="contract-section-two">
   {% if lang == 'esp' %}
   <h2>4. Condiciones de Pago</h2>
   <p>Las partes acuerdan las siguientes condiciones de pago basadas en los items y servicios descritos:</p>
@@ -257,8 +262,7 @@ tr, td, th {
   {% endif %}
 </ul>
 </div>
-<div class="page-break"></div>
-<div class="contract-section-two">
+<div class="contract-section">
   {% if data and data.get('contract') %}
   {% if lang == 'esp' %}
     <h2>5. Detalles del Contrato</h2>
@@ -440,7 +444,8 @@ tr, td, th {
       {% if data and data.get('client') and data.get('client').get('employee_position') %}
       <p class="line">
         {% if data.get('client').get('employee_position') %}
-          {{ data.get('client').get('employee_position') }}
+          {{ data.get('client').get('employee_position') }}<br>
+          <strong>{{ data.get('client').get('name')}}</strong>
         {% else %}
           {% if lang == 'esp' %}
             (Sin puesto definido)
@@ -452,9 +457,9 @@ tr, td, th {
       {% endif %}
     </div>
   {% endif %}
-
-  {% if data and data.get('client') and data.get('client').get('in_charge_info') %}
-    <div style="text-align: center; padding-left: 20px;">
+  <!-- 2. company -->
+  {% if data and data.get('client') and data.get('client').get('in_charge_info') and data.get('company')%}
+    <div style="text-align: center; padding-left: 160px;">
       <p class=line><strong>{{ data.get('client').get('in_charge_info').get('name') }}</strong></p>
       {% if data.get('client').get('in_charge_info').get('signature') %}
         <img src="{{ url_for('static', filename='signatures/en/' +data.get('client').get('in_charge_info').get('signature')) }}"
@@ -475,7 +480,8 @@ tr, td, th {
 
       <p class="line">
         {% if data.get('client').get('in_charge_info').get('position') %}
-          {{ data.get('client').get('in_charge_info').get('position') }}
+          {{ data.get('client').get('in_charge_info').get('position') }}<br>
+          <strong>{{ data.get('company').get('name') }}</strong>
         {% else %}
           {% if lang == 'esp' %}
             (Sin puesto definido)

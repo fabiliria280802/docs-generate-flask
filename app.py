@@ -1,4 +1,7 @@
 from flask import Flask, render_template, request, jsonify
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from google.oauth2.service_account import Credentials
 from weasyprint import HTML
 from dicttoxml import dicttoxml
 from xml.dom.minidom import parseString
@@ -8,18 +11,25 @@ import json
 
 app = Flask(__name__)
 
+CREDENTIALS_FILE = 'credentials/'
+
+SCOPES = ['https://www.googleapis.com/auth/drive']
+
+credentials = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
+drive_service = build('drive', 'v3', credentials=credentials)
+
 required_dirs = [
+    "credencials/"
     "static/data-eng",
     "static/data-esp",
     "static/assets",
     "examples/invoices/pdf",
     "examples/invoices/png",
     "examples/invoices/xml",
-    "examples/actService/pdf",
-    "examples/actService/png",
-    "examples/actService/xml",
+    "examples/deliveries/pdf",
+    "examples/deliveries/png",
+    "examples/deliveries/xml",
     "examples/contract/pdf",
-    "examples/contract/png",
     "examples/contract/xml"
 ]
 
@@ -103,8 +113,9 @@ def show_invoice(index):
         invoice = invoice_data['invoices'][index]
         total_images = 21
         image_index = (index % total_images) + 1
+        current_lang = request.args.get('lang', 'eng')
 
-        return render_template('invoice.html', data=invoice, image_index=image_index)
+        return render_template('invoice.html', data=invoice, image_index=image_index, lang=current_lang)
     except IndexError:
         return "Factura no encontrada", 404
 
@@ -175,35 +186,46 @@ def generate_all_deliveries():
         'xml': []
     }
     base_url = request.host_url.rstrip('/')
+    languages = ['en', 'esp']  # Idiomas disponibles
 
-    for index, delivery in enumerate(delivery_data['deliveries']):
-        try:
-            image_index = (index % 21) + 1
-            rendered = render_template('delivery.html', data=delivery, image_index=image_index)
+    for lang in languages:
+        for index, delivery in enumerate(delivery_data['deliveries']):
+            try:
+                # Validar los datos necesarios
+                required_keys = ['date', 'name','number','from', 'orderNumber', 'invoiceNumber', 'hes', 'price', 'endDate', 'employee_name', 'employee_position']
+                if not all(key in delivery['receiver'] for key in required_keys):
+                    print(f"Datos faltantes en el acta de entrega {index}: {delivery['receiver']}")
+                    continue
 
-            # Generar PDF
-            pdf_filename = f"delivery_{delivery['receiver']['invoiceNumber']}.pdf"
-            pdf_path = os.path.join('examples', 'deliveries', 'pdf', pdf_filename)
-            HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
-            generated_files['pdf'].append(pdf_filename)
+                # Renderizar la plantilla para el idioma actual
+                rendered = render_template('deliveryReceipt.html', data=delivery, lang=lang)
 
-            # Generar PNG
-            png_filename = f"delivery_{delivery['receiver']['invoiceNumber']}.png"
-            png_path = os.path.join('examples', 'deliveries', 'png', png_filename)
-            pdf_to_png(pdf_path, png_path)
-            generated_files['png'].append(png_filename)
+                # Generar PDF
+                pdf_filename = f"delivery_{delivery['receiver']['number']}_{lang}.pdf"
+                pdf_path = os.path.join('examples', 'deliveries', 'pdf', pdf_filename)
+                HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
+                generated_files['pdf'].append(pdf_filename)
 
-            # Generar XML
-            xml_filename = f"delivery_{delivery['receiver']['invoiceNumber']}.xml"
-            xml_path = os.path.join('examples', 'deliveries', 'xml', xml_filename)
-            generate_delivery_xml(delivery, xml_path)
-            generated_files['xml'].append(xml_filename)
-        except Exception as e:
-            print(f"Error generando acta de entrega {index}: {e}")
-            continue
+                # Generar PNG
+                png_filename = f"delivery_{delivery['receiver']['number']}_{lang}.png"
+                png_path = os.path.join('examples', 'deliveries', 'png', png_filename)
+                pdf_to_png(pdf_path, png_path)
+                generated_files['png'].append(png_filename)
+
+                # Generar XML
+                xml_filename = f"delivery_{delivery['receiver']['number']}_{lang}.xml"
+                xml_path = os.path.join('examples', 'deliveries', 'xml', xml_filename)
+                generate_delivery_xml(delivery, xml_path)
+                generated_files['xml'].append(xml_filename)
+            except KeyError as e:
+                print(f"Falta la clave {e} en el acta de entrega {index}")
+                continue
+            except Exception as e:
+                print(f"Error inesperado generando acta de entrega {index} en {lang}: {e}")
+                continue
 
     return jsonify({
-        "message": "Todas las actas de entrega fueron generadas con éxito en PDF, PNG y XML",
+        "message": "Todas las actas de entrega fueron generadas con éxito en PDF, PNG y XML para ambos idiomas",
         "files": generated_files,
         "locations": {
             "pdf": "examples/deliveries/pdf/",
@@ -219,27 +241,28 @@ def generate_delivery(index):
     if delivery_data is None:
         return "Error: No se pudo cargar los datos de las facturas", 500
 
+    lang = request.args.get('lang', 'en')
     try:
         delivery = delivery_data['deliveries'][index]
         total_images = 21
         image_index = (index % total_images) + 1
-        rendered = render_template('delivery.html', data=delivery, image_index=image_index)
+        rendered = render_template('deliveryReceipt.html', data=delivery, image_index=image_index, lang=lang)
 
         # Generar PDF
-        pdf_filename = f"delivery_{delivery['delivery']['number']}.pdf"
+        pdf_filename = f"delivery_{delivery['receiver']['number']}_{lang}.pdf"
         pdf_path = os.path.join('examples', 'deliveries', 'pdf', pdf_filename)
         base_url = request.host_url.rstrip('/')
         HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
 
         # Generar PNG
-        png_filename = f"delivery_{delivery['delivery']['number']}.png"
+        png_filename = f"delivery_{delivery['receiver']['number']}_{lang}.png"
         png_path = os.path.join('examples', 'deliveries', 'png', png_filename)
         pdf_to_png(pdf_path, png_path)
 
         # Generar XML
-        xml_filename = f"delivery_{delivery['delivery']['number']}.xml"
+        xml_filename = f"delivery_{delivery['receiver']['number']}_{lang}.xml"
         xml_path = os.path.join('examples', 'deliveries', 'xml', xml_filename)
-        generate_delivery_xml(invoice, xml_path)
+        generate_delivery_xml(delivery, xml_path)
 
         return f"Factura generada con éxito en PDF, PNG y XML"
     except IndexError:
@@ -251,11 +274,13 @@ def generate_invoice(index):
     if invoice_data is None:
         return "Error: No se pudo cargar los datos de las facturas", 500
 
+    lang = request.args.get('lang', 'en')
+
     try:
         invoice = invoice_data['invoices'][index]
         total_images = 21
         image_index = (index % total_images) + 1
-        rendered = render_template('invoice.html', data=invoice, image_index=image_index)
+        rendered = render_template('invoice.html', data=invoice, image_index=image_index, lang=lang)
 
         # Generar PDF
         pdf_filename = f"invoice_{invoice['invoice']['number']}.pdf"
@@ -318,37 +343,41 @@ def generate_all_invoices():
         'png': [],
         'xml': []
     }
+    languages = ['en', 'esp']
     base_url = request.host_url.rstrip('/')
 
-    for index, invoice in enumerate(invoice_data['invoices']):
-        try:
-            image_index = (index % total_images) + 1
-            rendered = render_template('invoice.html', data=invoice, image_index=image_index)
+    for lang in languages:
+        for index, invoice in enumerate(invoice_data['invoices']):
+            try:
+                image_index = (index % total_images) + 1
 
-            # Generar PDF
-            pdf_filename = f"invoice_{invoice['invoice']['number']}.pdf"
-            pdf_path = os.path.join('examples', 'invoices', 'pdf', pdf_filename)
-            HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
-            generated_files['pdf'].append(pdf_filename)
+                # Renderizar la plantilla con el idioma correspondiente
+                rendered = render_template('invoice.html', data=invoice, image_index=image_index, lang=lang)
 
-            # Generar PNG
-            png_filename = f"invoice_{invoice['invoice']['number']}.png"
-            png_path = os.path.join('examples', 'invoices', 'png', png_filename)
-            pdf_to_png(pdf_path, png_path)
+                # Generar PDF con el idioma en el nombre
+                pdf_filename = f"invoice_{invoice['invoice']['number']}_{lang}.pdf"
+                pdf_path = os.path.join('examples', 'invoices', 'pdf', pdf_filename)
+                HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
+                generated_files['pdf'].append(pdf_filename)
 
+                # Generar PNG con el idioma en el nombre
+                png_filename = f"invoice_{invoice['invoice']['number']}_{lang}.png"
+                png_path = os.path.join('examples', 'invoices', 'png', png_filename)
+                pdf_to_png(pdf_path, png_path)
+                generated_files['png'].append(png_filename)
 
-            # Generar XML
-            xml_filename = f"invoice_{invoice['invoice']['number']}.xml"
-            xml_path = os.path.join('examples', 'invoices', 'xml', xml_filename)
-            generate_invoice_xml(invoice, xml_path)
-            generated_files['xml'].append(xml_filename)
+                # Generar XML con el idioma en el nombre
+                xml_filename = f"invoice_{invoice['invoice']['number']}_{lang}.xml"
+                xml_path = os.path.join('examples', 'invoices', 'xml', xml_filename)
+                generate_invoice_xml(invoice, xml_path)
+                generated_files['xml'].append(xml_filename)
 
-        except Exception as e:
-            print(f"Error generando factura {invoice['invoice']['number']}: {str(e)}")
-            continue
+            except Exception as e:
+                print(f"Error generando factura {invoice['invoice']['number']} en {lang}: {str(e)}")
+                continue
 
     return jsonify({
-        "message": "Todas las facturas fueron generadas con éxito en PDF, PNG y XML",
+        "message": "Todas las facturas fueron generadas con éxito en PDF, PNG y XML en ambos idiomas",
         "files": generated_files,
         "locations": {
             "pdf": "examples/invoices/pdf/",
@@ -357,74 +386,51 @@ def generate_all_invoices():
         }
     })
 
+
 @app.route('/generate_all_contracts')
 def generate_all_contracts():
     contract_data = get_data('contract')
     if contract_data is None:
         return "Error: No se pudo cargar los datos de los contratos", 500
 
-    # Cantidad total de imágenes disponibles (para rotar si fuese necesario)
-    total_images = 21
     generated_files = {
         'pdf': [],
-        'png': [],
         'xml': []
     }
-
-    # Removemos la barra final para usar en base_url
+    languages = ['en', 'esp']  # Idiomas disponibles
     base_url = request.host_url.rstrip('/')
 
-    # Iteramos cada contrato
-    for index, contract in enumerate(contract_data['contracts']):
-        try:
-            # Índice para las imágenes (opcional, si quieres rotarlas como en invoices)
-            image_index = (index % total_images) + 1
+    for lang in languages:
+        for index, contract in enumerate(contract_data['contracts']):
+            try:
+                # Renderizar la plantilla para el idioma actual
+                rendered = render_template('contract.html', data=contract, lang=lang)
 
-            # Renderizamos la plantilla contract.html, pasando 'contract' como 'data'
-            rendered = render_template('contract.html',
-                                       data=contract,
-                                       image_index=image_index)
+                # Generar PDF
+                pdf_filename = f"contract_{index+1}_{lang}.pdf"
+                pdf_path = os.path.join('examples', 'contract', 'pdf', pdf_filename)
+                HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
+                generated_files['pdf'].append(pdf_filename)
 
-            # Generar nombres de archivos con base al índice (o si tienes un "number", úsalo)
-            pdf_filename = f"contract_{index+1}.pdf"
-            pdf_path = os.path.join('examples', 'contract', 'pdf', pdf_filename)
+                # Generar XML
+                xml_filename = f"contract_{index+1}_{lang}.xml"
+                xml_path = os.path.join('examples', 'contract', 'xml', xml_filename)
+                generate_contract_xml(contract, xml_path)
+                generated_files['xml'].append(xml_filename)
 
-            # Convertir HTML a PDF
-            HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
-            generated_files['pdf'].append(pdf_filename)
-
-            # Generar PNG (tomando la primera página del PDF)
-            png_filename = f"contract_{index+1}.png"
-            png_path = os.path.join('examples', 'contract', 'png', png_filename)
-
-            images = convert_from_path(pdf_path)
-            if images:
-                images[0].save(png_path, 'PNG')
-                generated_files['png'].append(png_filename)
-            else:
-                print(f"Error: No se pudo convertir a PNG el contrato {index+1}")
-
-            # Generar XML
-            xml_filename = f"contract_{index+1}.xml"
-            xml_path = os.path.join('examples', 'contract', 'xml', xml_filename)
-
-            # Puedes reusar la misma función generate_invoice_xml o crear una para contratos
-            generate_invoice_xml(contract, xml_path)
-            generated_files['xml'].append(xml_filename)
-
-        except Exception as e:
-            print(f"Error generando contrato {index+1}: {str(e)}")
-            continue
+            except Exception as e:
+                print(f"Error generando contrato {index+1} en {lang}: {str(e)}")
+                continue
 
     return jsonify({
-        "message": "Todos los contratos fueron generados con éxito en PDF, PNG y XML",
+        "message": "Todos los contratos fueron generados con éxito en PDF y XML para ambos idiomas",
         "files": generated_files,
         "locations": {
             "pdf": "examples/contract/pdf/",
-            "png": "examples/contract/png/",
             "xml": "examples/contract/xml/"
         }
     })
+
 
 
 @app.route('/check_logos')
@@ -479,4 +485,3 @@ def list_all():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 3000))
     app.run(host='0.0.0.0', port=port, debug=True)
-
