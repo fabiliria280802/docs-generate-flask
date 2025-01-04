@@ -150,7 +150,6 @@ SERVICE_DESCRIPTION_ES = [
     "Consultoría en estrategia de TI"
 ]
 
-
 def generate_signature(name, filename, lang="en"):
     """Generar una imagen de firma realista basada en un nombre y guardar en carpetas según idioma."""
     # Directorio específico para el idioma
@@ -182,8 +181,6 @@ def generate_signature(name, filename, lang="en"):
         img.save(image_path, "PNG")
         return relative_path  # Devuelve solo el nombre del archivo
     except Exception as e:
-        print(f"Error al generar firma: {e}")
-        return None
         print(f"Error al generar firma: {e}")
         return None
 

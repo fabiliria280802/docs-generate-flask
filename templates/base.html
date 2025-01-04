@@ -74,13 +74,13 @@
     
 
     <div class="nav-menu">
-        <a href="{{ url_for('home', lang=request.args.get('lang', 'eng')) }}"
+        <a href="{{ url_for('invoices.get_invoices', lang=request.args.get('lang', 'eng')) }}"
            {% if active_page == 'invoices' %}class="active"{% endif %}>Invoices</a>
 
-        <a href="{{ url_for('contracts', lang=request.args.get('lang', 'eng')) }}"
+        <a href="{{ url_for('contracts.get_contracts', lang=request.args.get('lang', 'eng')) }}"
            {% if active_page == 'contracts' %}class="active"{% endif %}>Contracts</a>
 
-        <a href="{{ url_for('delivery_receipts', lang=request.args.get('lang', 'eng')) }}"
+        <a href="{{ url_for('deliveries.get_delivery_receipts', lang=request.args.get('lang', 'eng')) }}"
            {% if active_page == 'delivery_receipts' %}class="active"{% endif %}>Delivery Receipts</a>
 
 
