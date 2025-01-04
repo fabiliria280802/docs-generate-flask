@@ -10,6 +10,9 @@ import fitz
 import os
 import sys
 import json
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 def find_env_file():
     possible_paths = [
