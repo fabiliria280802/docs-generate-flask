@@ -33,19 +33,99 @@
             background: white;
             page-break-inside: avoid;
         }
-        .header, .invoice-info {
+        .header, 
+        .invoice-info {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: flex-start;
+            align-items: stretch;
             margin-bottom: 20px;
             border: 1px solid #000;
+            height: auto;
         }
-        .header-logo img, .header img {
-            max-height: 80px;
-            object-fit: contain;
+        .header-logo {
+            width: 120px; 
+            padding: 5px 5px;
         }
-        .company-info-left, .company-info-right, .invoice-info-left, .invoice-info-center, .invoice-info-right {
+
+        .header-logo img {
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+        }
+        .header-logo,
+        .company-info-left{
+            height: 120px;
+            border-right: 1px solid #000;
+            display: flex;
+            flex-direction: column; 
+            justify-content: center;
+            align-items: flex-start; 
+            box-sizing: border-box;
+        }
+        .company-info-left{
+            flex: 1; 
+            padding: 10px 20px; 
+        }
+        .company-info-right{
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0px 20px;
+            box-sizing: border-box;
+        }
+
+        .invoice-info-left {
+            width: 120px; 
+            height: auto; 
+            border-right: 1px solid #000; 
+        }
+
+        .invoice-info {
+            display: flex;
+            justify-content: flex-start; 
+            align-items: stretch; 
+            border: 1px solid #000;
+            margin-bottom: 20px;
+        }
+
+        .invoice-info-left,
+        .invoice-info-center,
+        .invoice-info-right {
+            display: flex;
+            flex-direction: column; 
+            justify-content: center;
+            align-items: flex-start; 
+            padding: 10px 20px; 
+            box-sizing: border-box;
+        }
+
+        .invoice-info-center {
+            flex: 1; 
+            padding: 10px 20px !important;
+            border-right: 1px solid #000; 
+        }
+
+        .company-info-left p, 
+        .company-info-right p,
+        .invoice-info-left p, 
+        .invoice-info-center p, 
+        .invoice-info-right p {
+            margin: 0;
+            line-height: 2.5;
+        }
+        
+        .company-info-left, 
+        .company-info-right, 
+        .invoice-info-left, 
+        .invoice-info-center, 
+        .invoice-info-right {
             font-size: 12px;
+        }
+        .invoice-info-right {
+            flex: 2;
+            padding: 10px 20px;
         }
         .table {
             width: 100%;
@@ -110,7 +190,7 @@
                 <p>{% if lang == 'esp' %}Factura N°{% else %}Invoice No{% endif %}</p>
                 <p>{% if lang == 'esp' %}Fecha{% else %}Date{% endif %}</p>
                 <p>{% if lang == 'esp' %}Vencimiento{% else %}Payable At{% endif %}</p>
-                <p>{% if lang == 'esp' %}Pedido N°{% else %}Order No{% endif %}</p>
+                <p>{% if lang == 'esp' %}Orden N°{% else %}Order No{% endif %}</p>
             </div>
             <div class="invoice-info-center">
                 <p>{{ data.invoice.number }}</p>
@@ -120,7 +200,7 @@
             </div>
             <div class="invoice-info-right">
                 <p>{{ data.client.name }}</p>
-                <p>{% if lang == 'esp' %}RUC{% else %}Tax ID{% endif %}: {{ data.client.ruc }}</p>
+                <p>{% if lang == 'esp' %}RUC{% else %}RUC{% endif %}: {{ data.client.ruc }}</p>
                 <p>{{ data.client.address }}</p>
                 <p>{{ data.client.city }}</p>
                 <p>{{ data.client.country }}</p>
@@ -144,7 +224,7 @@
                 <tr>
                     <td>{{ loop.index }}</td>
                     <td>{{ item.code }}</td>
-                    <td>{{ item.description }}</td>
+                    <td>{{ item.description }}<br>HES: {{item.hes}}</td>
                     <td>{{ item.quantity }}</td>
                     <td>${{ "%.2f"|format(item.unitCost) }}</td>
                     <td>${{ "%.2f"|format(item.cost) }}</td>

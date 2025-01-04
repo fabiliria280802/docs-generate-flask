@@ -132,3 +132,21 @@ curl http://localhost:3000/generate_invoice?data=
 ```bash
 curl http://localhost:3000/generate_invoice?data=
 ```
+
+---
+
+## How to run test and see coverage?
+ - Run test:
+```bash
+coverage run -m pytest
+```
+
+ - Create a report:
+```bash
+coverage report -m
+```
+
+- See coverage on your prefer browser with the following directions: 
+   - For general info see: http://localhost:5500/docs-generate-flask/htmlcov/index.html
+   - For per function details see: http://localhost:5500/docs-generate-flask/htmlcov/function_index.html
+   - For per classes details see: http://localhost:5500/docs-generate-flask/htmlcov/class_index.html
