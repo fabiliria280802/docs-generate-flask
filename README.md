@@ -47,7 +47,7 @@ This my repo is microservice for generate docs in pdf using flask and jinja2 tem
 
 ---
 
-## How to run app (windows)
+## How to run app? (windows)
 **Description:** This is the main app that will be used to generate docs.
 1. Create a virtual environment:
 ```bash
@@ -67,6 +67,33 @@ This my repo is microservice for generate docs in pdf using flask and jinja2 tem
 ```
 
 **Note:** if you are having trouble with adding a new dependency, pliz go to requirements.txt then go back to step 3, finally use `pip list` to check if the dependency is installed, and write library_name==version in requirements.txt
+
+---
+
+## How to run app? (linux/Mac)
+
+*Description:** This is the main app that will be used to generate docs.
+1. Create a virtual environment:
+```bash
+ python3 -m venv venv
+ ```
+2. Activate the virtual environment:
+```bash
+    source venv/bin/activate
+```
+3. Install the dependencies:
+```bash
+    python3 -m pip install -r requirements.txt
+```
+4. Run the app:
+```bash
+    python3 -m flask --app app run
+```
+
+**Note:** Desactivate virtual enviroment if you are not using it with the following command:
+```bash
+deactivate
+```
 
 ---
 

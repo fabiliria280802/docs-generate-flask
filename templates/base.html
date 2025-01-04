@@ -82,6 +82,10 @@
 
         <a href="{{ url_for('delivery_receipts', lang=request.args.get('lang', 'eng')) }}"
            {% if active_page == 'delivery_receipts' %}class="active"{% endif %}>Delivery Receipts</a>
+
+
+        <button id="generate-documents" onclick="generateDocuments()">Generate All Documents</button>
+
     </div>
     <div class="content">
         {% block content %}{% endblock %}
@@ -96,6 +100,21 @@
             url.searchParams.set('lang', lang);
             // Recargamos la página con el nuevo parámetro
             window.location.href = url.toString();
+        }
+
+        function generateDocuments() {
+            fetch('/generate_all_documents')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                    }
+                    console.log('Generated files:', data.files);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to generate documents. Check console for details.');
+                });
         }
     </script>
 </body>
