@@ -14,9 +14,9 @@ app.register_blueprint(deliveries_blueprint, url_prefix='/deliveries')
 app.register_blueprint(documents_blueprint, url_prefix='/documents')
 app.register_blueprint(data_blueprint, url_prefix='/data')
 app.register_blueprint(home_blueprint)
-app.secret_key = 'AIzaSyDlGhz9JO1RAHRjvemXbjYFg_Rh7MrDQlQ'
+# app.secret_key = 'AIzaSyDlGhz9JO1RAHRjvemXbjYFg_Rh7MrDQlQ'
 
-# Ruta para iniciar la autenticación
+""" Ruta para iniciar la autenticación
 @app.route('/authorize')
 def authorize():
     flow = Flow.from_client_secrets_file(
@@ -31,7 +31,7 @@ def authorize():
     session['state'] = state
     return redirect(authorization_url)
 
-# Ruta de callback para manejar la respuesta de Google
+ Ruta de callback para manejar la respuesta de Google
 @app.route('/oauth2callback')
 def oauth2callback():
     state = session['state']
@@ -46,5 +46,6 @@ def oauth2callback():
     service = build('drive', 'v3', credentials=credentials)
     # Ahora puedes usar 'service' para interactuar con la API de Google Drive
     return 'Autenticación exitosa'
+    """
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    app.run(host='0.0.0.0', port=5500, debug=True)

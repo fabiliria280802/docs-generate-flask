@@ -234,7 +234,13 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
 
         invoice_date_obj = fake_en.date_this_year()
         max_payable_days = 30
-        payable_at_date = invoice_date_obj + timedelta(days=random.randint(0, max_payable_days))
+        payable_at_date = invoice_date_obj + timedelta(days=max_payable_days)
+
+        random_days = random.randint(1, 365)
+        end_date = invoice_date_obj + timedelta(days=random_days)
+        invoice_date_str = invoice_date_obj.strftime('%d-%m-%Y')
+        payable_at_date_str = payable_at_date.strftime('%d-%m-%Y')
+        end_date_str = end_date.strftime('%d-%m-%Y')
 
         company_data_en = {
             "name": company_name_en,
@@ -273,8 +279,8 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
             "company": company_data_en,
             "invoice": {
                 "number": f"11{i+1:05}",
-                "date": invoice_date_obj.isoformat(),
-                "payableAt": payable_at_date.isoformat(),
+                "date": invoice_date_str,
+                "payableAt": payable_at_date_str,
                 "orderNumber": f"34{i+1:05}"
             },
             "client": client_data_en,
@@ -301,8 +307,8 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
                 "invoiceNumber": invoice_en["invoice"]["number"],
                 "hes": items[0]["hes"],  # Usar el HES del primer ítem
                 "orderNumber": invoice_en["invoice"]["orderNumber"],
-                "date": invoice_date_obj.isoformat(),
-                "endDate": (invoice_date_obj + timedelta(days=random.randint(1, 365))).isoformat(),
+                "date": invoice_date_str,
+                "endDate": end_date_str,
                 "price": invoice_en["totals"]["totalDue"],
                 "employee_name": enap_employee_name_en,
                 "employee_position": enap_employee_position_en,
@@ -318,7 +324,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
             "contract": {
                 "number": f"65{i+1:05}",
                 "startDate": invoice_en["invoice"]["date"],
-                "endDate": (invoice_date_obj + timedelta(days=random.randint(1, 365))).isoformat(),
+                "endDate": end_date_str,
                 "invoiceNumber": invoice_en["invoice"]["number"],
                 "hes": items[0]["hes"],
                 "orderNumber": invoice_en["invoice"]["orderNumber"],
@@ -379,9 +385,15 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
         tax = round(before_tax * tax_rate / 100, 2)
         total_due = round(before_tax + tax, 2)
 
-        invoice_date_obj = fake_es.date_this_year()
+        invoice_date_obj = fake_en.date_this_year()
         max_payable_days = 30
-        payable_at_date = invoice_date_obj + timedelta(days=random.randint(0, max_payable_days))
+        payable_at_date = invoice_date_obj + timedelta(days=max_payable_days)
+
+        random_days = random.randint(1, 365)
+        end_date = invoice_date_obj + timedelta(days=random_days)
+        invoice_date_str = invoice_date_obj.strftime('%d-%m-%Y')
+        payable_at_date_str = payable_at_date.strftime('%d-%m-%Y')
+        end_date_str = end_date.strftime('%d-%m-%Y')
 
         company_data_esp = {
             "name": company_name_esp,
@@ -420,8 +432,8 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
             "company": company_data_esp,
             "invoice": {
                 "number": f"11{i+1:05}",
-                "date": invoice_date_obj.isoformat(),
-                "payableAt": payable_at_date.isoformat(),
+                "date": invoice_date_str,
+                "payableAt": payable_at_date_str,
                 "orderNumber": f"34{i+1:05}"
             },
             "client": client_data_esp,
@@ -448,8 +460,8 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
                 "invoiceNumber": invoice_esp["invoice"]["number"],
                 "hes": items[0]["hes"],  # Usar el HES del primer ítem
                 "orderNumber": invoice_esp["invoice"]["orderNumber"],
-                "date": invoice_date_obj.isoformat(),
-                "endDate": (invoice_date_obj + timedelta(days=random.randint(1, 365))).isoformat(),
+                "date": invoice_date_str,
+                "endDate": end_date_str,
                 "price": invoice_esp["totals"]["totalDue"],
                 "employee_name": enap_employee_name_esp,
                 "employee_position": enap_employee_position_esp,
