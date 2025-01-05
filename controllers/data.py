@@ -5,45 +5,214 @@ import json
 from faker import Faker
 from datetime import datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
-from services.drive_service import create_folder, upload_to_drive
+from services.drive_service import create_folder, upload_to_drive, get_or_create_folder, upload_font_to_drive, download_font_from_drive
 from services.utils import save_to_json
 
 
 fake_en = Faker("en_US")
 fake_es = Faker("es_ES")
 
+VALID_RUCS = [
+    "1793168604001", "1757541519001", "1792256267001", "1790012345001", "1701234567001",
+    "0101234540001", "0201234580001", "0301234530001", "0401234570001", "0501234520001",
+    "0601234560001", "0701234510001", "0801234550001", "0901234500001", "1001234580001"
+]
+
+ACCOUNTING_POSITIONS_EN = [
+    "Accounting Manager",
+    "Accounts Payable Clerk",
+    "Accounts Receivable Clerk",
+    "Tax Accountant",
+    "Payroll Specialist",
+    "Financial Analyst",
+    "Internal Auditor",
+    "Cost Accountant",
+    "Budget Analyst",
+    "Financial Controller"
+]
+
+ACCOUNTING_POSITIONS_ES = [
+    "Gerente de Contabilidad",
+    "Asistente de Cuentas por Pagar",
+    "Asistente de Cuentas por Cobrar",
+    "Contador de Impuestos",
+    "Especialista de Nómina",
+    "Analista Financiero",
+    "Auditor Interno",
+    "Contador de Costos",
+    "Analista Presupuestario",
+    "Controlador Financiero"
+]
+
+SIGNATURE_DIR = "../static/signatures"
+
+SERVICE_DESCRIPTION_EN = [
+    "Cloud infrastructure optimization",
+    "IT security assessment and penetration testing",
+    "Data analytics and business intelligence",
+    "Custom software development",
+    "IT support and helpdesk services",
+    "Cybersecurity consulting and risk assessment",
+    "Digital transformation strategy",
+    "Network architecture and implementation",
+    "Database design and management",
+    "System integration services",
+    "Software quality assurance and testing",
+    "Backup and disaster recovery solutions",
+    "Enterprise resource planning (ERP) implementation",
+    "Customer relationship management (CRM) solutions",
+    "Website design and development",
+    "Mobile app development",
+    "Blockchain integration and consulting",
+    "Machine learning model development",
+    "IT project management",
+    "Cloud migration services",
+    "IT infrastructure auditing",
+    "Big data solutions and strategy",
+    "Managed IT services",
+    "Technology roadmap planning",
+    "IoT solutions and implementation",
+    "Compliance and regulatory consulting",
+    "Virtualization and containerization",
+    "Digital marketing strategy and SEO",
+    "Identity and access management solutions",
+    "Artificial intelligence consulting",
+    "Data migration and conversion services",
+    "IT policy and governance consulting",
+    "Supply chain optimization with IT tools",
+    "Video conferencing and collaboration tools setup",
+    "Open-source technology consulting",
+    "Business continuity planning",
+    "API development and integration",
+    "E-commerce platform design",
+    "Technology cost optimization",
+    "Legacy system modernization",
+    "Application performance monitoring and optimization",
+    "Remote work enablement solutions",
+    "IT asset management",
+    "DevOps pipeline setup and automation",
+    "Virtual private network (VPN) implementation",
+    "Data warehouse design and optimization",
+    "Training and workshops on emerging technologies",
+    "IT staffing and recruitment services",
+    "Technical documentation and user manuals",
+    "Virtual reality and augmented reality solutions",
+    "IT strategy consulting"
+]
+
+SERVICE_DESCRIPTION_ES = [
+    "Optimización de infraestructura en la nube",
+    "Evaluación de seguridad informática y pruebas de penetración",
+    "Análisis de datos e inteligencia empresarial",
+    "Desarrollo de software personalizado",
+    "Soporte técnico y servicios de helpdesk",
+    "Consultoría en ciberseguridad y evaluación de riesgos",
+    "Estrategia de transformación digital",
+    "Arquitectura de redes e implementación",
+    "Diseño y gestión de bases de datos",
+    "Servicios de integración de sistemas",
+    "Garantía de calidad y pruebas de software",
+    "Soluciones de respaldo y recuperación ante desastres",
+    "Implementación de planificación de recursos empresariales (ERP)",
+    "Soluciones de gestión de relaciones con clientes (CRM)",
+    "Diseño y desarrollo de sitios web",
+    "Desarrollo de aplicaciones móviles",
+    "Integración y consultoría en blockchain",
+    "Desarrollo de modelos de aprendizaje automático",
+    "Gestión de proyectos de TI",
+    "Servicios de migración a la nube",
+    "Auditoría de infraestructura de TI",
+    "Soluciones y estrategia de big data",
+    "Servicios de TI gestionados",
+    "Planificación de hoja de ruta tecnológica",
+    "Soluciones e implementación de IoT",
+    "Consultoría en cumplimiento normativo",
+    "Virtualización y contenedores",
+    "Estrategia de marketing digital y SEO",
+    "Soluciones de gestión de identidad y acceso",
+    "Consultoría en inteligencia artificial",
+    "Servicios de migración y conversión de datos",
+    "Consultoría en políticas y gobernanza de TI",
+    "Optimización de la cadena de suministro con herramientas de TI",
+    "Configuración de herramientas de videoconferencia y colaboración",
+    "Consultoría en tecnologías de código abierto",
+    "Planificación de continuidad empresarial",
+    "Desarrollo e integración de APIs",
+    "Diseño de plataformas de comercio electrónico",
+    "Optimización de costos tecnológicos",
+    "Modernización de sistemas heredados",
+    "Monitoreo y optimización del rendimiento de aplicaciones",
+    "Soluciones para habilitar el trabajo remoto",
+    "Gestión de activos de TI",
+    "Configuración de pipelines DevOps y automatización",
+    "Implementación de redes privadas virtuales (VPN)",
+    "Diseño y optimización de almacenes de datos",
+    "Capacitación y talleres sobre tecnologías emergentes",
+    "Servicios de reclutamiento y selección de personal de TI",
+    "Documentación técnica y manuales de usuario",
+    "Soluciones de realidad virtual y aumentada",
+    "Consultoría en estrategia de TI"
+]
+
+
 data_blueprint = Blueprint('data', __name__)
 
-def generate_signature(name, filename, lang="en"):
-    """Generar una imagen de firma realista basada en un nombre y guardar en carpetas según idioma."""
-    # Directorio específico para el idioma
+def ensure_font_availability(file_name, local_path, folder_name="static/fonts"):
+    """
+    Asegura que la fuente esté disponible tanto localmente como en Google Drive.
+    Si no está localmente, la descarga de Google Drive.
+    Si no está en Google Drive, la sube desde el sistema local.
+    """
+    # Verificar si el archivo existe localmente
+    if os.path.exists(local_path):
+        print(f"Fuente encontrada localmente en {local_path}. Verificando en Google Drive...")
+        upload_font_to_drive(file_name, local_path, folder_name)
+        return local_path
+
+    # Intentar descargar desde Google Drive
+    print(f"Archivo de fuente no encontrado localmente. Intentando descargar de Google Drive...")
+    downloaded_path = download_font_from_drive(file_name, local_path)
+    if downloaded_path:
+        return downloaded_path
+
+    print(f"Fuente no disponible en local ni en Google Drive. Por favor, asegúrate de cargarla manualmente.")
+    return None
+
+
+def generate_signature(name, filename, lang="en", upload_to_cloud=True):
+    """Generar una imagen de firma realista y subirla a Google Drive si es necesario."""
     lang_dir = os.path.join(SIGNATURE_DIR, lang)
     if not os.path.exists(lang_dir):
         os.makedirs(lang_dir)
 
-    # Ruta al archivo de la firma
     image_path = os.path.join(lang_dir, filename)
-
-    # Ruta relativa del archivo para guardar solo el nombre
     relative_path = filename
 
     try:
-        # Ruta a la fuente de firma (asegúrate de que exista)
-        font_path = "../static/fonts/signature.ttf"
+        # Construir la ruta absoluta de la fuente
+        base_dir = os.path.dirname(__file__)
+        font_path = os.path.abspath(os.path.join(base_dir, "../static/fonts/signature.ttf"))
+        font_path = ensure_font_availability("signature.ttf", font_path)
 
-        # Crear una imagen en blanco
+        if not font_path:
+            print("No se pudo encontrar o garantizar la disponibilidad de la fuente.")
+            return None
+
+        # Crear imagen
         img = Image.new('RGBA', (400, 100), (255, 255, 255, 0))
         draw = ImageDraw.Draw(img)
-
-        # Usar una fuente personalizada
         font = ImageFont.truetype(font_path, 48)
-
-        # Dibujar el texto de la firma
         draw.text((10, 25), name, font=font, fill=(0, 0, 0))
-
-        # Guardar la imagen
         img.save(image_path, "PNG")
-        return relative_path  # Devuelve solo el nombre del archivo
+        print(f"Firma guardada localmente en {image_path}")
+
+        if upload_to_cloud:
+            signature_folder_id = get_or_create_folder("static/signature")
+            if signature_folder_id:
+                upload_to_drive(image_path, signature_folder_id)
+                print(f"Firma subida a Google Drive: {filename}")
+
+        return relative_path
     except Exception as e:
         print(f"Error al generar firma: {e}")
         return None
@@ -346,45 +515,36 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
         {"contracts": contracts, "enap": [base_client_data_esp]}
     )
 
-def generate_and_save_data_to_drive():
+def generate_and_save_data_to_drive(local_only=True):
     # Generar datos
     invoice_data_en, delivery_data_en, contract_data_en = generate_random_invoice_and_delivery_data_and_contract_data_eng(900)
     invoice_data_es, delivery_data_es, contract_data_es = generate_random_invoice_and_delivery_data_and_contract_data_esp(900)
 
-    # Crear estructura de carpetas en Google Drive
-    static_folder_id = create_folder('static')
-    data_eng_folder_id = create_folder('data-eng', static_folder_id)
-    data_esp_folder_id = create_folder('data-esp', static_folder_id)
+    # Guardar en local
+    save_to_json(invoice_data_en, '../static/data-eng/invoice-data.json')
+    save_to_json(delivery_data_en, '../static/data-eng/delivery-data.json')
+    save_to_json(contract_data_en, '../static/data-eng/contract-data.json')
+    save_to_json(invoice_data_es, '../static/data-esp/invoice-data.json')
+    save_to_json(delivery_data_es, '../static/data-esp/delivery-data.json')
+    save_to_json(contract_data_es, '../static/data-esp/contract-data.json')
 
-    # Guardar datos localmente y subirlos a Google Drive
-    local_paths = {
-        "invoice_en": "../static/data-eng/invoice-data.json",
-        "delivery_en": "../static/data-eng/delivery-data.json",
-        "contract_en": "../static/data-eng/contract-data.json",
-        "invoice_es": "../static/data-esp/invoice-data.json",
-        "delivery_es": "../static/data-esp/delivery-data.json",
-        "contract_es": "../static/data-esp/contract-data.json",
-    }
+    if local_only:
+        return "Datos generados y guardados en local."
 
-    save_to_json(invoice_data_en, local_paths["invoice_en"])
-    upload_to_drive(local_paths["invoice_en"], data_eng_folder_id)
+    # Subir a Google Drive
+    data_eng_folder_id = create_folder("data-eng")
+    data_esp_folder_id = create_folder("data-esp")
 
-    save_to_json(delivery_data_en, local_paths["delivery_en"])
-    upload_to_drive(local_paths["delivery_en"], data_eng_folder_id)
+    upload_to_drive('../static/data-eng/invoice-data.json', data_eng_folder_id)
+    upload_to_drive('../static/data-eng/delivery-data.json', data_eng_folder_id)
+    upload_to_drive('../static/data-eng/contract-data.json', data_eng_folder_id)
 
-    save_to_json(contract_data_en, local_paths["contract_en"])
-    upload_to_drive(local_paths["contract_en"], data_eng_folder_id)
+    upload_to_drive('../static/data-esp/invoice-data.json', data_esp_folder_id)
+    upload_to_drive('../static/data-esp/delivery-data.json', data_esp_folder_id)
+    upload_to_drive('../static/data-esp/contract-data.json', data_esp_folder_id)
 
-    save_to_json(invoice_data_es, local_paths["invoice_es"])
-    upload_to_drive(local_paths["invoice_es"], data_esp_folder_id)
+    return "Datos generados y subidos a Google Drive."
 
-    save_to_json(delivery_data_es, local_paths["delivery_es"])
-    upload_to_drive(local_paths["delivery_es"], data_esp_folder_id)
-
-    save_to_json(contract_data_es, local_paths["contract_es"])
-    upload_to_drive(local_paths["contract_es"], data_esp_folder_id)
-
-    return "Datos generados y guardados con éxito en local y Google Drive."
 
 @data_blueprint.route('/generate_data', methods=['POST'])
 def generate_data():

@@ -47,7 +47,7 @@
 <div class="delivery-list">
     <div class="header-container">
         <h1>Lista de Actas de Entrega</h1>
-        <a href="{{ url_for('generate_all_deliveries') }}" class="generate-all">Generar Todas las Actas</a>
+        <a href="{{ url_for('deliveries.generate_all_deliveries') }}" class="generate-all">Generar Todas las Actas</a>
     </div>
     {% for delivery in deliveries %}
     <div class="delivery-item">
@@ -55,8 +55,8 @@
         <p><strong>Cliente:</strong> {{ delivery.receiver.name }}</p>
         <p><strong>Fecha:</strong> {{ delivery.receiver.date }}</p>
         <div class="actions">
-            <a href="{{ url_for('show_delivery', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Ver</a>
-            <a href="{{ url_for('generate_delivery', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Generar PDF</a>
+            <a href="{{ url_for('deliveries.show_delivery', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Ver</a>
+            <a href="{{ url_for('deliveries.generate_delivery', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Generar PDF</a>
         </div>
     </div>
     {% endfor %}

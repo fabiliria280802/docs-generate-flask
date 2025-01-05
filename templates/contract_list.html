@@ -49,7 +49,7 @@
 <div class="contract-list">
     <div class="header-container">
         <h1>Lista de Contratos</h1>
-        <a href="{{ url_for('generate_all_contracts') }}" class="generate-all">Generar Todos los Contratos</a>
+        <a href="{{ url_for('contracts.generate_all_contracts') }}" class="generate-all">Generar Todos los Contratos</a>
     </div>
     {% for contract in contracts %}
 <div class="contract-item">
@@ -58,8 +58,8 @@
     <p><strong>RUC:</strong> {{ contract.company.ruc }}</p>
     <p><strong>Country:</strong> {{ contract.company.country }}</p>
     <div class="actions">
-        <a href="{{ url_for('show_contract', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Ver</a>
-        <a href="{{ url_for('generate_contract', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Generar PDF</a>
+        <a href="{{ url_for('contracts.show_contract', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Ver</a>
+        <a href="{{ url_for('contracts.generate_contract', index=loop.index0, lang=request.args.get('lang', 'eng')) }}" class="button">Generar PDF</a>
     </div>
 </div>
 {% endfor %}

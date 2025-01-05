@@ -27,10 +27,9 @@
         </form>
     </div>
 
-    <p>Don't have data? don't need to worry, click generate for your specific source:</p>
-    <form method="POST" action="/set_data_source">
-        <button type="submit" name="data_source" value="local">Use Local Data</button>
-        <button type="submit" name="data_source" value="google_drive">Use Google Drive Data</button>
+    <p>Don't have data? don't need to worry, click generate:</p>
+    <form method="POST" action="/create_data_source">
+        <button type="submit" name="data_source" value="google_drive">Generate Data</button>
     </form>
 </div>
 {% endblock %}

@@ -17,6 +17,76 @@ except Exception as e:
     print(f"Error al autenticar con Google Drive: {e}")
     drive_service = None
 
+def upload_font_to_drive(file_name, local_path, folder_name="static/fonts"):
+    """Subir la fuente al Google Drive si no existe ahí."""
+    try:
+        query = f"name='{file_name}' and trashed=false"
+        response = drive_service.files().list(q=query, fields="files(id, name)").execute()
+        files = response.get('files', [])
+
+        if files:
+            print(f"La fuente {file_name} ya existe en Google Drive.")
+            return
+
+        folder_id = get_or_create_folder(folder_name)
+        if not folder_id:
+            print(f"No se pudo crear o acceder a la carpeta {folder_name} en Google Drive.")
+            return
+
+        upload_to_drive(local_path, folder_id)
+        print(f"Fuente {file_name} subida a Google Drive en la carpeta {folder_name}.")
+    except Exception as e:
+        print(f"Error al subir el archivo de fuente: {e}")
+
+def download_font_from_drive(file_name, local_path):
+    """Descargar el archivo de fuente desde Google Drive si no está localmente."""
+    try:
+        query = f"name='{file_name}' and trashed=false"
+        response = drive_service.files().list(q=query, fields="files(id, name)").execute()
+        files = response.get('files', [])
+
+        if not files:
+            print(f"No se encontró el archivo {file_name} en Google Drive.")
+            return None
+
+        file_id = files[0]['id']
+        request = drive_service.files().get_media(fileId=file_id)
+        with open(local_path, 'wb') as f:
+            f.write(request.execute())
+        print(f"Archivo de fuente {file_name} descargado a {local_path}")
+        return local_path
+    except Exception as e:
+        print(f"Error al descargar el archivo de fuente: {e}")
+        return None
+
+
+
+def get_or_create_folder(folder_name, parent_id=None):
+    """Obtiene el ID de una carpeta en Google Drive o la crea si no existe."""
+    if drive_service is None:
+        print("Servicio de Google Drive no está configurado correctamente.")
+        return None
+
+    try:
+        # Verificar si la carpeta ya existe
+        query = f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+        if parent_id:
+            query += f" and '{parent_id}' in parents"
+
+        response = drive_service.files().list(q=query, fields="files(id, name)").execute()
+        files = response.get('files', [])
+
+        if files:
+            print(f"Carpeta '{folder_name}' encontrada en Google Drive.")
+            return files[0]['id']
+
+        # Crear la carpeta si no existe
+        return create_folder(folder_name, parent_id)
+    except Exception as e:
+        print(f"Error al buscar/crear la carpeta '{folder_name}': {e}")
+        return None
+
+
 def create_folder(folder_name, parent_id=None):
     """Crea una carpeta en Google Drive."""
     if drive_service is None:

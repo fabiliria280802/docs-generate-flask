@@ -50,7 +50,7 @@
 <div class="invoice-list">
     <div class="header-container">
         <h1>Lista de Facturas</h1>
-        <a href="{{ url_for('generate_all_invoices') }}" class="generate-all">Generar Todas las Facturas</a>
+        <a href="{{ url_for('invoices.generate_all_invoices') }}" class="generate-all">Generar Todas las Facturas</a>
     </div>
     {% for invoice in invoices %}
     <div class="invoice-item">
@@ -63,12 +63,12 @@
             <p><strong>Total:</strong> No disponible</p>
         {% endif %}
         <div class="actions">
-            <a href="{{ url_for('show_invoice',
+            <a href="{{ url_for('invoices.show_invoice',
                     index=loop.index0,
                     lang=request.args.get('lang', 'eng')) }}"
                 class="button">Ver</a>
 
-           <a href="{{ url_for('generate_invoice',
+           <a href="{{ url_for('invoices.generate_invoice',
                    index=loop.index0,
                    lang=request.args.get('lang', 'eng')) }}"
                 class="button">Generar PDF</a>
