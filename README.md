@@ -92,7 +92,7 @@ If your are having any trouble with installing the  dependencies for linux/Mac, 
 4. **Run the Flask application:**
 
     ```bash
-    flask run # On Windows use `python -m flask --app .\app.py run`
+    flask run --port=5500 # On Windows use `python -m flask --app .\app.py run`
     ```
 
 If your are having any trouble with running teh app on linux/Mac, try using the command for windows:
