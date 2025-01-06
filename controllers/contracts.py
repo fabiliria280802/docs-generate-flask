@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, request, render_template, session
-from services.utils import generate_contract_xml, get_data_from_local
+from services.utils import generate_contract_xml, get_data_from_local, pdf_to_png
 from services.drive_service import get_data_from_google_drive
 from weasyprint import HTML
 
@@ -108,7 +108,6 @@ def generate_all_contracts():
 
     generated_files = {
         'pdf': [],
-        'png': [],
         'xml': []
     }
     languages = ['en', 'esp']  # Idiomas disponibles
@@ -126,11 +125,6 @@ def generate_all_contracts():
                 HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
                 generated_files['pdf'].append(pdf_filename)
 
-                # Generar PNG con el idioma en el nombre
-                png_filename = f"contract_{contract['contract']['number']}_{lang}.png"
-                png_path = os.path.join('examples', 'contract', 'png', png_filename)
-                pdf_to_png(pdf_path, png_path)
-                generated_files['png'].append(png_filename)
 
                 # Generar XML con el idioma en el nombre
                 xml_filename = f"contract_{contract['contract']['number']}_{lang}.xml"
@@ -147,7 +141,6 @@ def generate_all_contracts():
         "files": generated_files,
         "locations": {
             "pdf": "examples/contract/pdf/",
-            "png": "examples/contract/png/",
             "xml": "examples/contract/xml/"
         }
     }
