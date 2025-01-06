@@ -519,3 +519,4 @@ if __name__ == "__main__":
 
     save_to_json(contract_data_es, '../static/data-esp/contract-data.json')
     print("Datos de contratos (español) generados en contract-data.json (data-esp)")
+    

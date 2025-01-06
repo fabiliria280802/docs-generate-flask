@@ -108,6 +108,7 @@ def generate_all_contracts():
 
     generated_files = {
         'pdf': [],
+        'png': [],
         'xml': []
     }
     languages = ['en', 'esp']  # Idiomas disponibles
@@ -116,30 +117,37 @@ def generate_all_contracts():
     for lang in languages:
         for index, contract in enumerate(contract_data['contracts']):
             try:
-                # Renderizar la plantilla para el idioma actual
+                # Renderizar la plantilla con el idioma correspondiente
                 rendered = render_template('contract.html', data=contract, lang=lang)
 
-                # Generar PDF
-                pdf_filename = f"contract_{index+1}_{lang}.pdf"
+                # Generar PDF con el idioma en el nombre
+                pdf_filename = f"contract_{contract['contract']['number']}_{lang}.pdf"
                 pdf_path = os.path.join('examples', 'contract', 'pdf', pdf_filename)
                 HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
                 generated_files['pdf'].append(pdf_filename)
 
-                # Generar XML
-                xml_filename = f"contract_{index+1}_{lang}.xml"
+                # Generar PNG con el idioma en el nombre
+                png_filename = f"contract_{contract['contract']['number']}_{lang}.png"
+                png_path = os.path.join('examples', 'contract', 'png', png_filename)
+                pdf_to_png(pdf_path, png_path)
+                generated_files['png'].append(png_filename)
+
+                # Generar XML con el idioma en el nombre
+                xml_filename = f"contract_{contract['contract']['number']}_{lang}.xml"
                 xml_path = os.path.join('examples', 'contract', 'xml', xml_filename)
                 generate_contract_xml(contract, xml_path)
                 generated_files['xml'].append(xml_filename)
 
             except Exception as e:
-                print(f"Error generando contrato {index+1} en {lang}: {str(e)}")
+                print(f"Error generando contrato {contract['contract']['number']} en {lang}: {str(e)}")
                 continue
 
     return {
-        "message": "Todos los contratos fueron generados con éxito en PDF y XML para ambos idiomas",
+        "message": "Todos los contratos fueron generados con éxito en PDF, PNG y XML para ambos idiomas",
         "files": generated_files,
         "locations": {
             "pdf": "examples/contract/pdf/",
+            "png": "examples/contract/png/",
             "xml": "examples/contract/xml/"
         }
     }
