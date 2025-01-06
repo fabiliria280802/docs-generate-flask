@@ -31,7 +31,7 @@ def show_contract(index):
     except IndexError:
         return "Factura no encontrada", 404
     
-@contracts_blueprint.route('/generate_contract/<int:index>', methods=['POST'])
+@contracts_blueprint.route('/generate_contract/<int:index>', methods=['GET'])
 def generate_contract(index):
 
     data_source = session.get('data_source', 'local')

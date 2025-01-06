@@ -31,7 +31,7 @@ def show_invoice(index):
     except IndexError:
         return "Factura no encontrada", 404
 
-@invoices_blueprint.route('/generate_invoice/<int:index>', methods=['POST'])
+@invoices_blueprint.route('/generate_invoice/<int:index>', methods=['GET'])
 def generate_invoice(index):
 
     data_source = session.get('data_source', 'local')

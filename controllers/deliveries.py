@@ -32,7 +32,7 @@ def show_delivery(index):
     except IndexError:
         return "Factura no encontrada", 404
 
-@deliveries_blueprint.route('/generate_delivery/<int:index>', methods=['POST'])
+@deliveries_blueprint.route('/generate_delivery/<int:index>', methods=['GET'])
 def generate_delivery(index):
 
     data_source = session.get('data_source', 'local')
