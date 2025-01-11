@@ -128,7 +128,7 @@ td {
 <ul>
   <li><strong>Nombre:</strong> {{ data.get('company').get('name') }}</li>
   <li><strong>RUC:</strong> {{ data.get('company').get('ruc') }}</li>
-  <li><strong>Tax ID:</strong> {{ data.get('company').get('taxId') }}</li>
+  <li><strong>Transacción:</strong> {{ data.get('company').get('taxId') }}</li>
   <li><strong>Dirección:</strong> {{ data.get('company').get('address') }}</li>
   <li><strong>Ciudad:</strong> {{ data.get('company').get('city') }}</li>
   <li><strong>País:</strong> {{ data.get('company').get('country') }}</li>
@@ -141,7 +141,7 @@ td {
     <ul>
       <li><strong>Name:</strong> {{ data.get('company').get('name')}}</li>
       <li><strong>RUC:</strong> {{ data.get('company').get('ruc') }}</li>
-      <li><strong>Tax ID:</strong> {{ data.get('company').get('taxId') }}</li>
+      <li><strong>Transaction:</strong> {{ data.get('company').get('taxId') }}</li>
       <li><strong>Address:</strong> {{ data.get('company').get('address') }}</li>
       <li><strong>City:</strong> {{ data.get('company').get('city') }}</li>
       <li><strong>Country:</strong> {{ data.get('company').get('country') }}</li>
@@ -193,15 +193,15 @@ td {
         <th>Descripción</th>
         <th>HES</th>
         <th>Cantidad</th>
-        <th>Costo Unitario (USD)</th>
-        <th>Costo (USD)</th>
+        <th>Costo Unitario</th>
+        <th>Costo</th>
       {% else %}
         <th>Code</th>
         <th>Description</th>
         <th>HES</th>
         <th>Quantity</th>
-        <th>Unit Cost (USD)</th>
-        <th>Cost (USD)</th>
+        <th>Unit Cost</th>
+        <th>Cost</th>
       {% endif %}
     </tr>
   </thead>

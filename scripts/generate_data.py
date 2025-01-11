@@ -8,11 +8,42 @@ from PIL import Image, ImageDraw, ImageFont
 fake_en = Faker("en_US")
 fake_es = Faker("es_ES")
 
-VALID_RUCS = [
-    "1793168604001", "1757541519001", "1792256267001", "1790012345001", "1701234567001",
-    "0101234540001", "0201234580001", "0301234530001", "0401234570001", "0501234520001",
-    "0601234560001", "0701234510001", "0801234550001", "0901234500001", "1001234580001"
-]
+COMPANY_RUC_MAP = {
+    "Alphazed Inc": "0992760737001", 
+    "Beta Group SA": "1793168604001", 
+    "Tech Solutions": "1757541519001", 
+    "SONY Tecnologias": "1790012345001", 
+    "Servicios Empresariales SA": "1701234567001", 
+    "Verndale": "0101234540001", 
+    "Deuna SA": "0301234530001", 
+    "Genius Corp": "0401234570001", 
+    "Kuger Corp": "0501234520001", 
+    "YT Music": "0601234560001", 
+    "Netflife SA": "0701234510001", 
+    "Telefonica SA": "0801234550001", 
+    "Deep Note SA": "0901234500001", 
+    "Warner SA": "1001234580001", 
+    "SUDO ADmin SA": "1101234530001", 
+    "ZorE SA": "1301234520001", 
+    "Danvers Corp": "0104123450001", 
+    "Susuki SA": "1401234560001",
+    "X Rest SA": "1501234510001",
+    "TATA SA": "0201234580001", 
+    "L Corp":"1201234570001" ,
+    "Amazon AWS":"0205182033001",
+    "Microsoft":"0301234563001",
+    "Google":"0591234567001",
+    "SAP":"0999999999001",
+    "Zendesk SA": "0190000009001",
+    "IBM":"2396543219001",
+    "Deloitte":"2290001119001",
+    "Thoughtworks":"0161234567001",
+    "Salesforce":"1469999996001",
+    "Kimobil":"2461234567001",
+    "Huawei":"1757797202001",
+    "Samsung":"0190054683001",
+    "LG Computers":"1792256267001"
+}
 
 ACCOUNTING_POSITIONS_EN = [
     "Accounting Manager",
@@ -188,7 +219,7 @@ def generate_hes(index):
     last5 = str(index + 1).zfill(5)
     return f"812{last5}"
 
-def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices=900):
+def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices=1500):
     invoices = []
     deliveries = []
     contracts = []
@@ -202,8 +233,19 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
     }
 
     for i in range(num_invoices):
-        company_name_en = fake_en.company().replace(",", "").replace(".", "").lower()
-        united_company_name_en = company_name_en.replace(" ", "")
+        if i >= 1250:
+            if random.random() < 0.5: 
+                company_name_en = ""  
+                company_ruc = random.choice(["", "123INVALID"])
+            else:
+                company_name_en = random.choice(list(COMPANY_RUC_MAP.keys()))
+                company_ruc = COMPANY_RUC_MAP[company_name_en]
+        else:
+            company_name_en = random.choice(list(COMPANY_RUC_MAP.keys()))
+            company_ruc = COMPANY_RUC_MAP[company_name_en]
+
+        # Generar datos de la empresa
+        united_company_name_en = company_name_en.replace(" ", "").lower()
 
         # Generar entre 1 y 5 ítems
         num_items = random.randint(1, 5)
@@ -244,13 +286,13 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
 
         company_data_en = {
             "name": company_name_en,
-            "ruc": random.choice(VALID_RUCS),
-            "address": fake_en.address().replace("\n", ", "),
-            "city": fake_en.city(),
-            "country": fake_en.country(),
-            "phone": fake_en.phone_number(),
-            "website": f"www.{united_company_name_en}.com",
-            "email": f"info@{united_company_name_en}.com",
+            "ruc": company_ruc,
+            "address": fake_en.address().replace("\n", ", ") if i < 1250 or random.random() > 0.3 else "",
+            "city": fake_en.city() if i < 1250 or random.random() > 0.2 else "",
+            "country": fake_en.country() if i < 1250 or random.random() > 0.1 else "",
+            "phone": fake_en.phone_number() if i < 1250 or random.random() > 0.3 else "",
+            "website": f"www.{united_company_name_en}.com" if i < 1250 or random.random() > 0.3 else "",
+            "email": f"info@{united_company_name_en}.com" if i < 1250 or random.random() > 0.1 else "",
             "taxId": fake_en.ean8()
         }
 
@@ -270,26 +312,26 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
         signature_path_en = generate_signature(in_charge_name_en, generic_signature_filename_en, lang="en")
 
         client_data_en["in_charge_info"] = {
-            "name": in_charge_name_en,
-            "position": in_charge_position_en,
+            "name": in_charge_name_en if i < 1250 or random.random() > 0.1 else "",
+            "position": in_charge_position_en if i < 1250 or random.random() > 0.1 else "",
             "signature": signature_path_en
         }
 
         invoice_en = {
             "company": company_data_en,
             "invoice": {
-                "number": f"11{i+1:05}",
-                "date": invoice_date_str,
-                "payableAt": payable_at_date_str,
+                "number": f"11{i+1:05}" if i < 1250 or random.random() > 0.3 else "",
+                "date": invoice_date_str if i < 1250 or random.random() > 0.3 else None,
+                "payableAt": payable_at_date_str if i < 1250 or random.random() > 0.3 else None,
                 "orderNumber": f"34{i+1:05}"
             },
             "client": client_data_en,
             "items": items,
             "totals": {
-                "beforeTax": before_tax,
-                "taxRate": tax_rate,
+                "beforeTax": before_tax if i < 1250 or random.random() > 0.2 else None,
+                "taxRate": tax_rate if i < 1250 or random.random() > 0.1 else None,
                 "tax": tax,
-                "totalDue": total_due
+                "totalDue": total_due if i < 1250 or random.random() > 0.2 else None
             },
             "in_charge_info": {
                 "name": in_charge_name_en,
@@ -300,33 +342,33 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
 
         delivery_en = {
             "receiver": {
-                "number": f"14{i+1:05}",
-                "name": base_client_data_en["name"],
-                "from": company_data_en["name"],
-                "ruc": company_data_en["ruc"],
+                "number": f"14{i+1:05}" if i < 1250 or random.random() > 0.3 else "",
+                "name": base_client_data_en["name"] if i < 1250 or random.random() > 0.3 else "",
+                "from": company_data_en["name"] if i < 1250 or random.random() > 0.1 else "",
+                "ruc": company_data_en["ruc"] if i < 1250 or random.random() > 0.3 else "",
                 "invoiceNumber": invoice_en["invoice"]["number"],
-                "hes": items[0]["hes"],  # Usar el HES del primer ítem
-                "orderNumber": invoice_en["invoice"]["orderNumber"],
-                "date": invoice_date_str,
-                "endDate": end_date_str,
-                "price": invoice_en["totals"]["totalDue"],
-                "employee_name": enap_employee_name_en,
-                "employee_position": enap_employee_position_en,
+                "hes": items[0]["hes"],  
+                "orderNumber": invoice_en["invoice"]["orderNumber"] if i < 1250 or random.random() > 0.1 else "",
+                "date": invoice_date_str if i < 1250 or random.random() > 0.1 else "",
+                "endDate": end_date_str if i < 1250 or random.random() > 0.3 else "",
+                "price": invoice_en["totals"]["totalDue"] if i < 1250 or random.random() > 0.2 else "",
+                "employee_name": enap_employee_name_en if i < 1250 or random.random() > 0.3 else "",
+                "employee_position": enap_employee_position_en if i < 1250 or random.random() > 0.3 else "",
                 "employee_signature": enap_signature_path_en
             }
         }
 
         contract_data_en = {
-            "company": company_data_en,
-            "client": client_data_en,
+            "company": company_data_en if i < 1250 or random.random() > 0.3 else "",
+            "client": client_data_en if i < 1250 or random.random() > 0.3 else "",
             "items": items,
             "totals": invoice_en["totals"],
             "contract": {
                 "number": f"65{i+1:05}",
                 "startDate": invoice_en["invoice"]["date"],
                 "endDate": end_date_str,
-                "invoiceNumber": invoice_en["invoice"]["number"],
-                "hes": items[0]["hes"],
+                "invoiceNumber": invoice_en["invoice"]["number"] if i < 1250 or random.random() > 0.3 else "",
+                "hes": items[0]["hes"] if i < 1250 or random.random() > 0.3 else "",
                 "orderNumber": invoice_en["invoice"]["orderNumber"],
             },
         }
@@ -341,7 +383,7 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
         {"contracts": contracts, "enap": [base_client_data_en]}
     )
 
-def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices=900):
+def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices=1500):
     invoices = []
     deliveries = []
     contracts = []
@@ -355,20 +397,29 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
     }
 
     for i in range(num_invoices):
-        company_name_esp = fake_es.company().replace(",", "").replace(".", "").lower()
-        united_company_name_esp = company_name_esp.replace(" ", "")
+        if i > 1250:
+            if random.random() < 0.5:  
+                company_name_esp = ""  
+                company_ruc = random.choice(["", "123INVALID"]) 
+            else:
+                company_name_esp = random.choice(list(COMPANY_RUC_MAP.keys()))
+                company_ruc = COMPANY_RUC_MAP[company_name_esp]
+        else:
+            company_name_esp = random.choice(list(COMPANY_RUC_MAP.keys()))
+            company_ruc = COMPANY_RUC_MAP[company_name_esp]
 
-        # Generar entre 1 y 5 ítems
+        united_company_name_esp = company_name_esp.replace(" ", "").lower()
+
         num_items = random.randint(1, 5)
         items = []
         before_tax = 0
 
         for j in range(num_items):
-            quantity = random.randint(1, 10)
-            unit_cost = round(random.uniform(20, 500), 2)
-            cost = round(quantity * unit_cost, 2)
-            before_tax += round(cost, 2)
-            service_description = random.choice(SERVICE_DESCRIPTION_ES)
+            quantity = random.randint(1, 10) if i < 1250 or random.random() > 0.2 else None
+            unit_cost = round(random.uniform(20, 500), 2) if i < 1250 or random.random() > 0.2 else None
+            cost = round(quantity * unit_cost, 2) if quantity and unit_cost else 0
+            before_tax += round(cost, 2) 
+            service_description = random.choice(SERVICE_DESCRIPTION_ES) if i < 1250 or random.random() > 0.3 else ""
 
             item = {
                 "code": f"36{chr(65 + (i % 26))}{j+1}",
@@ -380,7 +431,6 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
             }
             items.append(item)
 
-        # Calcular impuestos y total
         tax_rate = 15
         tax = round(before_tax * tax_rate / 100, 2)
         total_due = round(before_tax + tax, 2)
@@ -397,14 +447,14 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
 
         company_data_esp = {
             "name": company_name_esp,
-            "ruc": random.choice(VALID_RUCS),
-            "address": fake_es.address().replace("\n", ", "),
-            "city": fake_es.city(),
+            "ruc": company_ruc,
+            "address": fake_es.address().replace("\n", ", ") if i < 1250 or random.random() > 0.3 else "", 
+            "city": fake_es.city() if i < 1250 or random.random() > 0.3 else "",
             "country": fake_es.country(),
-            "phone": fake_es.phone_number(),
-            "website": f"www.{united_company_name_esp}.com",
-            "email": f"info@{united_company_name_esp}.com",
-            "taxId": fake_es.ean8()
+            "phone": fake_es.phone_number() if i < 1250 or random.random() > 0.3 else "",
+            "website": f"www.{united_company_name_esp}.com" if i < 1250 or random.random() > 0.3 else "",
+            "email": f"info@{united_company_name_esp}.com" if i < 1250 or random.random() > 0.3 else "",
+            "taxId": fake_es.ean8() if i < 1250 or random.random() > 0.3 else ""
         }
 
         enap_employee_name_esp = fake_es.name()
@@ -431,18 +481,18 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
         invoice_esp = {
             "company": company_data_esp,
             "invoice": {
-                "number": f"11{i+1:05}",
-                "date": invoice_date_str,
-                "payableAt": payable_at_date_str,
-                "orderNumber": f"34{i+1:05}"
+                "number": f"11{i+1:05}" if i < 1250 or random.random() > 0.3 else "",
+                "date": invoice_date_str if i < 1250 or random.random() > 0.3 else "",
+                "payableAt": payable_at_date_str if i < 1250 or random.random() > 0.3 else "",
+                "orderNumber": f"34{i+1:05}" if i < 1250 or random.random() > 0.3 else ""
             },
             "client": client_data_esp,
             "items": items,
             "totals": {
-                "beforeTax": before_tax,
+                "beforeTax": before_tax if i < 1250 or random.random() > 0.3 else None,
                 "taxRate": tax_rate,
-                "tax": tax,
-                "totalDue": total_due
+                "tax": tax if i < 1250 or random.random() > 0.3 else None,
+                "totalDue": total_due if i < 1250 or random.random() > 0.3 else None
             },
             "in_charge_info": {
                 "name": in_charge_name_esp,
@@ -453,34 +503,34 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
 
         delivery_esp = {
             "receiver": {
-                "number": f"14{i+1:05}",
-                "name": base_client_data_esp["name"],
-                "from": company_data_esp["name"],
-                "ruc": company_data_esp["ruc"],
-                "invoiceNumber": invoice_esp["invoice"]["number"],
-                "hes": items[0]["hes"],  # Usar el HES del primer ítem
-                "orderNumber": invoice_esp["invoice"]["orderNumber"],
-                "date": invoice_date_str,
-                "endDate": end_date_str,
+                "number": f"14{i+1:05}" if i < 1250 or random.random() > 0.3 else None,
+                "name": base_client_data_esp["name"] if i < 1250 or random.random() > 0.2 else "",
+                "from": company_data_esp["name"] if i < 1250 or random.random() > 0.2 else "",
+                "ruc": company_data_esp["ruc"] if i < 1250 or random.random() > 0.1 else "",
+                "invoiceNumber": invoice_esp["invoice"]["number"] if i < 1250 or random.random() > 0.1 else "",
+                "hes": items[0]["hes"] if i < 1250 or random.random() > 0.3 else None, 
+                "orderNumber": invoice_esp["invoice"]["orderNumber"] if i < 1250 or random.random() > 0.3 else "",
+                "date": invoice_date_str if i < 1250 or random.random() > 0.3 else "",
+                "endDate": end_date_str if i < 1250 or random.random() > 0.1 else "",
                 "price": invoice_esp["totals"]["totalDue"],
-                "employee_name": enap_employee_name_esp,
-                "employee_position": enap_employee_position_esp,
+                "employee_name": enap_employee_name_esp if i < 1250 or random.random() > 0.1 else "",
+                "employee_position": enap_employee_position_esp if i < 1250 or random.random() > 0.1 else "",
                 "employee_signature": enap_signature_path_esp
             }
         }
 
         contract_data_esp = {
-            "company": company_data_esp,
-            "client": client_data_esp,
+            "company": company_data_esp if i < 1250 or random.random() > 0.1 else "",
+            "client": client_data_esp if i < 1250 or random.random() > 0.3 else "",
             "items": items,
             "totals": invoice_esp["totals"],
             "contract": {
-                "number": f"65{i+1:05}",
-                "startDate": invoice_esp["invoice"]["date"],
+                "number": f"65{i+1:05}" if i < 1250 or random.random() > 0.3 else "",
+                "startDate": invoice_esp["invoice"]["date"] if i < 1250 or random.random() > 0.1 else "",
                 "endDate": (invoice_date_obj + timedelta(days=random.randint(1, 365))).isoformat(),
-                "invoiceNumber": invoice_esp["invoice"]["number"],
-                "hes": items[0]["hes"],
-                "orderNumber": invoice_esp["invoice"]["orderNumber"],
+                "invoiceNumber": invoice_esp["invoice"]["number"] if i < 1250 or random.random() > 0.2 else "",
+                "hes": items[0]["hes"] if i < 1250 or random.random() > 0.2 else "",
+                "orderNumber": invoice_esp["invoice"]["orderNumber"] if i < 1250 or random.random() > 0.3 else "",
             },
         }
 
@@ -500,7 +550,7 @@ def save_to_json(data, filename):
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
-    invoice_data_en, delivery_data_en, contract_data_en = generate_random_invoice_and_delivery_data_and_contract_data_eng(900)
+    invoice_data_en, delivery_data_en, contract_data_en = generate_random_invoice_and_delivery_data_and_contract_data_eng(1500)
     save_to_json(invoice_data_en, '../static/data-eng/invoice-data.json')
     print("Datos de facturas (inglés) generados en invoice-data.json (data-eng)")
 
@@ -510,7 +560,7 @@ if __name__ == "__main__":
     save_to_json(contract_data_en, '../static/data-eng/contract-data.json')
     print("Datos de contratos (inglés) generados en contract-data.json (data-eng)")
 
-    invoice_data_es, delivery_data_es, contract_data_es = generate_random_invoice_and_delivery_data_and_contract_data_esp(900)
+    invoice_data_es, delivery_data_es, contract_data_es = generate_random_invoice_and_delivery_data_and_contract_data_esp(1500)
     save_to_json(invoice_data_es, '../static/data-esp/invoice-data.json')
     print("Datos de facturas (español) generados en invoice-data.json (data-esp)")
 

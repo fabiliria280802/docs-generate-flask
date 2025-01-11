@@ -56,18 +56,18 @@ def generate_delivery(index):
 
         # Generar PDF
         pdf_filename = f"delivery_{delivery['receiver']['number']}_{lang}.pdf"
-        pdf_path = os.path.join('examples', 'deliveries', 'pdf', pdf_filename)
+        pdf_path = os.path.join('examples', 'deliveries', pdf_filename)
         base_url = request.host_url.rstrip('/')
         HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
 
         # Generar PNG
         png_filename = f"delivery_{delivery['receiver']['number']}_{lang}.png"
-        png_path = os.path.join('examples', 'deliveries', 'png', png_filename)
+        png_path = os.path.join('examples', 'deliveries', png_filename)
         pdf_to_png(pdf_path, png_path)
 
         # Generar XML
         xml_filename = f"delivery_{delivery['receiver']['number']}_{lang}.xml"
-        xml_path = os.path.join('examples', 'deliveries', 'xml', xml_filename)
+        xml_path = os.path.join('examples', 'deliveries', xml_filename)
         generate_delivery_xml(delivery, xml_path)
 
         return f"Factura generada con éxito en PDF, PNG y XML"
@@ -134,19 +134,19 @@ def generate_all_deliveries():
 
                 # Generar PDF
                 pdf_filename = f"delivery_{delivery['receiver']['number']}_{lang}.pdf"
-                pdf_path = os.path.join('examples', 'deliveries', 'pdf', pdf_filename)
+                pdf_path = os.path.join('examples', 'deliveries', pdf_filename)
                 HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
                 generated_files['pdf'].append(pdf_filename)
 
                 # Generar PNG
                 png_filename = f"delivery_{delivery['receiver']['number']}_{lang}.png"
-                png_path = os.path.join('examples', 'deliveries', 'png', png_filename)
+                png_path = os.path.join('examples', 'deliveries', png_filename)
                 pdf_to_png(pdf_path, png_path)
                 generated_files['png'].append(png_filename)
 
                 # Generar XML
                 xml_filename = f"delivery_{delivery['receiver']['number']}_{lang}.xml"
-                xml_path = os.path.join('examples', 'deliveries', 'xml', xml_filename)
+                xml_path = os.path.join('examples', 'deliveries', xml_filename)
                 generate_delivery_xml(delivery, xml_path)
                 generated_files['xml'].append(xml_filename)
             except KeyError as e:
@@ -160,8 +160,8 @@ def generate_all_deliveries():
         "message": "Todas las actas de entrega fueron generadas con éxito en PDF, PNG y XML para ambos idiomas",
         "files": generated_files,
         "locations": {
-            "pdf": "examples/deliveries/pdf/",
-            "png": "examples/deliveries/png/",
-            "xml": "examples/deliveries/xml/"
+            "pdf": "examples/deliveries/",
+            "png": "examples/deliveries/",
+            "xml": "examples/deliveries/"
         }
     }

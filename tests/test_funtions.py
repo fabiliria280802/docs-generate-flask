@@ -53,14 +53,9 @@ class TestAppFunctions(unittest.TestCase):
                 "static/data-eng",
                 "static/data-esp",
                 "static/assets",
-                "examples/invoices/pdf",
-                "examples/invoices/png",
-                "examples/invoices/xml",
-                "examples/deliveries/pdf",
-                "examples/deliveries/png",
-                "examples/deliveries/xml",
-                "examples/contract/pdf",
-                "examples/contract/xml"
+                "examples/invoices",
+                "examples/deliveries",
+                "examples/contract"
             ]
 
             # Verificar que se llamó a makedirs para cada directorio

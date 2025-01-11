@@ -211,7 +211,6 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>#</th>
                     <th>{% if lang == 'esp' %}Código{% else %}Code{% endif %}</th>
                     <th>{% if lang == 'esp' %}Descripción{% else %}Description{% endif %}</th>
                     <th>{% if lang == 'esp' %}Cantidad{% else %}Quantity{% endif %}</th>
@@ -222,7 +221,6 @@
             <tbody>
                 {% for item in data.get('items', []) %}
                 <tr>
-                    <td>{{ loop.index }}</td>
                     <td>{{ item.code }}</td>
                     <td>{{ item.description }}<br>HES: {{item.hes}}</td>
                     <td>{{ item.quantity }}</td>

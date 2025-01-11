@@ -56,18 +56,18 @@ def generate_invoice(index):
 
         # Generar PDF
         pdf_filename = f"invoice_{invoice['invoice']['number']}.pdf"
-        pdf_path = os.path.join('examples', 'invoices', 'pdf', pdf_filename)
+        pdf_path = os.path.join('examples', 'invoices', pdf_filename)
         base_url = request.host_url.rstrip('/')
         HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
 
         # Generar PNG
         png_filename = f"invoice_{invoice['invoice']['number']}.png"
-        png_path = os.path.join('examples', 'invoices', 'png', png_filename)
+        png_path = os.path.join('examples', 'invoices', png_filename)
         pdf_to_png(pdf_path, png_path)
 
         # Generar XML
         xml_filename = f"invoice_{invoice['invoice']['number']}.xml"
-        xml_path = os.path.join('examples', 'invoices', 'xml', xml_filename)
+        xml_path = os.path.join('examples', 'invoices', xml_filename)
         generate_invoice_xml(invoice, xml_path)
 
         return f"Factura generada con éxito en PDF, PNG y XML"
@@ -125,19 +125,19 @@ def generate_all_invoices():
 
                 # Generar PDF con el idioma en el nombre
                 pdf_filename = f"invoice_{invoice['invoice']['number']}_{lang}.pdf"
-                pdf_path = os.path.join('examples', 'invoices', 'pdf', pdf_filename)
+                pdf_path = os.path.join('examples', 'invoices', pdf_filename)
                 HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
                 generated_files['pdf'].append(pdf_filename)
 
                 # Generar PNG con el idioma en el nombre
                 png_filename = f"invoice_{invoice['invoice']['number']}_{lang}.png"
-                png_path = os.path.join('examples', 'invoices', 'png', png_filename)
+                png_path = os.path.join('examples', 'invoices', png_filename)
                 pdf_to_png(pdf_path, png_path)
                 generated_files['png'].append(png_filename)
 
                 # Generar XML con el idioma en el nombre
                 xml_filename = f"invoice_{invoice['invoice']['number']}_{lang}.xml"
-                xml_path = os.path.join('examples', 'invoices', 'xml', xml_filename)
+                xml_path = os.path.join('examples', 'invoices', xml_filename)
                 generate_invoice_xml(invoice, xml_path)
                 generated_files['xml'].append(xml_filename)
 
@@ -149,8 +149,8 @@ def generate_all_invoices():
         "message": "Todas las facturas fueron generadas con éxito en PDF, PNG y XML en ambos idiomas",
         "files": generated_files,
         "locations": {
-            "pdf": "examples/invoices/pdf/",
-            "png": "examples/invoices/png/",
-            "xml": "examples/invoices/xml/"
+            "pdf": "examples/invoices/",
+            "png": "examples/invoices/",
+            "xml": "examples/invoices/"
         }
     }

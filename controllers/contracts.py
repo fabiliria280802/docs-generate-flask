@@ -140,7 +140,7 @@ def generate_all_contracts():
         "message": "Todos los contratos fueron generados con éxito en PDF, PNG y XML para ambos idiomas",
         "files": generated_files,
         "locations": {
-            "pdf": "examples/contract/pdf/",
-            "xml": "examples/contract/xml/"
+            "pdf": "examples/contract/",
+            "xml": "examples/contract/"
         }
     }
