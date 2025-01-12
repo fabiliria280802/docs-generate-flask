@@ -55,16 +55,16 @@ def generate_contract(index):
 
         # Generar PDF
         pdf_filename = f"contract_{contract['contract']['number']}_{lang}.pdf"
-        pdf_path = os.path.join('examples', 'contract', 'pdf', pdf_filename)
+        pdf_path = os.path.join('examples', 'contract', pdf_filename)
         base_url = request.host_url.rstrip('/')
         HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
 
         # Generar XML
         xml_filename = f"contract_{contract['contract']['number']}_{lang}.xml"
-        xml_path = os.path.join('examples', 'contract', 'xml', xml_filename)
+        xml_path = os.path.join('examples', 'contract', xml_filename)
         generate_contract_xml(contract, xml_path)
 
-        return f"Factura generada con éxito en PDF, PNG y XML"
+        return f"Factura generada con éxito en PDF y XML"
     except IndexError:
         return "Factura no encontrada", 404    
 
@@ -121,14 +121,14 @@ def generate_all_contracts():
 
                 # Generar PDF con el idioma en el nombre
                 pdf_filename = f"contract_{contract['contract']['number']}_{lang}.pdf"
-                pdf_path = os.path.join('examples', 'contract', 'pdf', pdf_filename)
+                pdf_path = os.path.join('examples', 'contract', pdf_filename)
                 HTML(string=rendered, base_url=base_url).write_pdf(pdf_path)
                 generated_files['pdf'].append(pdf_filename)
 
 
                 # Generar XML con el idioma en el nombre
                 xml_filename = f"contract_{contract['contract']['number']}_{lang}.xml"
-                xml_path = os.path.join('examples', 'contract', 'xml', xml_filename)
+                xml_path = os.path.join('examples', 'contract', xml_filename)
                 generate_contract_xml(contract, xml_path)
                 generated_files['xml'].append(xml_filename)
 
@@ -137,7 +137,7 @@ def generate_all_contracts():
                 continue
 
     return {
-        "message": "Todos los contratos fueron generados con éxito en PDF, PNG y XML para ambos idiomas",
+        "message": "Todos los contratos fueron generados con éxito en PDF y XML para ambos idiomas",
         "files": generated_files,
         "locations": {
             "pdf": "examples/contract/",

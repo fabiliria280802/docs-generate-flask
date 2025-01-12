@@ -321,17 +321,17 @@ def generate_random_invoice_and_delivery_data_and_contract_data_eng(num_invoices
             "company": company_data_en,
             "invoice": {
                 "number": f"11{i+1:05}" if i < 1250 or random.random() > 0.3 else "",
-                "date": invoice_date_str if i < 1250 or random.random() > 0.3 else None,
-                "payableAt": payable_at_date_str if i < 1250 or random.random() > 0.3 else None,
+                "date": invoice_date_str if i < 1250 or random.random() > 0.3 else 0,
+                "payableAt": payable_at_date_str if i < 1250 or random.random() > 0.3 else 0,
                 "orderNumber": f"34{i+1:05}"
             },
             "client": client_data_en,
             "items": items,
             "totals": {
-                "beforeTax": before_tax if i < 1250 or random.random() > 0.2 else None,
-                "taxRate": tax_rate if i < 1250 or random.random() > 0.1 else None,
+                "beforeTax": before_tax if i < 1250 or random.random() > 0.2 else 0,
+                "taxRate": tax_rate if i < 1250 or random.random() > 0.1 else 0,
                 "tax": tax,
-                "totalDue": total_due if i < 1250 or random.random() > 0.2 else None
+                "totalDue": total_due if i < 1250 or random.random() > 0.2 else 0
             },
             "in_charge_info": {
                 "name": in_charge_name_en,
@@ -415,8 +415,8 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
         before_tax = 0
 
         for j in range(num_items):
-            quantity = random.randint(1, 10) if i < 1250 or random.random() > 0.2 else None
-            unit_cost = round(random.uniform(20, 500), 2) if i < 1250 or random.random() > 0.2 else None
+            quantity = random.randint(1, 10) if i < 1250 or random.random() > 0.2 else 0
+            unit_cost = round(random.uniform(20, 500), 2) if i < 1250 or random.random() > 0.2 else 0
             cost = round(quantity * unit_cost, 2) if quantity and unit_cost else 0
             before_tax += round(cost, 2) 
             service_description = random.choice(SERVICE_DESCRIPTION_ES) if i < 1250 or random.random() > 0.3 else ""
@@ -489,10 +489,10 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
             "client": client_data_esp,
             "items": items,
             "totals": {
-                "beforeTax": before_tax if i < 1250 or random.random() > 0.3 else None,
+                "beforeTax": before_tax if i < 1250 or random.random() > 0.3 else 0,
                 "taxRate": tax_rate,
-                "tax": tax if i < 1250 or random.random() > 0.3 else None,
-                "totalDue": total_due if i < 1250 or random.random() > 0.3 else None
+                "tax": tax if i < 1250 or random.random() > 0.3 else 0,
+                "totalDue": total_due if i < 1250 or random.random() > 0.3 else 0
             },
             "in_charge_info": {
                 "name": in_charge_name_esp,
@@ -503,12 +503,12 @@ def generate_random_invoice_and_delivery_data_and_contract_data_esp(num_invoices
 
         delivery_esp = {
             "receiver": {
-                "number": f"14{i+1:05}" if i < 1250 or random.random() > 0.3 else None,
+                "number": f"14{i+1:05}" if i < 1250 or random.random() > 0.3 else 0,
                 "name": base_client_data_esp["name"] if i < 1250 or random.random() > 0.2 else "",
                 "from": company_data_esp["name"] if i < 1250 or random.random() > 0.2 else "",
                 "ruc": company_data_esp["ruc"] if i < 1250 or random.random() > 0.1 else "",
                 "invoiceNumber": invoice_esp["invoice"]["number"] if i < 1250 or random.random() > 0.1 else "",
-                "hes": items[0]["hes"] if i < 1250 or random.random() > 0.3 else None, 
+                "hes": items[0]["hes"] if i < 1250 or random.random() > 0.3 else 0, 
                 "orderNumber": invoice_esp["invoice"]["orderNumber"] if i < 1250 or random.random() > 0.3 else "",
                 "date": invoice_date_str if i < 1250 or random.random() > 0.3 else "",
                 "endDate": end_date_str if i < 1250 or random.random() > 0.1 else "",
