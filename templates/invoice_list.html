@@ -1,69 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Facturas</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-        }
-        .invoice-list {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .invoice-item {
-            border: 1px solid #ccc;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .actions {
-            margin-top: 10px;
-        }
-        .button {
-            display: inline-block;
-            padding: 5px 10px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 3px;
-            margin-right: 10px;
-        }
-        .generate-all {
-            display: block;
-            width: fit-content;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-    </style>
-</head>
-<body>
-    <div class="invoice-list">
+{% extends "base.html" %}
+
+{% block title %}Invoice List{% endblock %}
+
+{% block extra_css %}
+<style>
+    .invoice-list {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .invoice-item {
+        border: 1px solid #ccc;
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 5px;
+    }
+    .actions {
+        margin-top: 10px;
+    }
+    .button {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 3px;
+        margin-right: 10px;
+    }
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .generate-all {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    .generate-all:hover {
+        background-color: #218838;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="invoice-list">
+    <div class="header-container">
         <h1>Lista de Facturas</h1>
-        {% for invoice in invoices %}
-        <div class="invoice-item">
-            <h3>Factura {{ invoice.invoice.number }}</h3>
-            <p><strong>Cliente:</strong> {{ invoice.client.name }}</p>
-            <p><strong>Fecha:</strong> {{ invoice.invoice.date }}</p>
-            {% if invoice.totals and invoice.totals.totalDue is not none %}
-                <p><strong>Total:</strong> ${{ "%.2f"|format(invoice.totals.totalDue) }}</p>
-            {% else %}
-                <p><strong>Total:</strong> No disponible</p>
-            {% endif %}
-            <div class="actions">
-                <a href="{{ url_for('show_invoice', index=loop.index0) }}" class="button">Ver</a>
-                <a href="{{ url_for('generate_invoice', index=loop.index0) }}" class="button">Generar PDF</a>
-            </div>
-        </div>
-        {% endfor %}
-        <a href="{{ url_for('generate_all_invoices') }}" class="generate-all">Generar Todas las Facturas</a>
+        <a href="{{ url_for('invoices.generate_all_invoices') }}" class="generate-all">Generar Todas las Facturas</a>
     </div>
-</body>
-</html>
+    {% for invoice in invoices %}
+    <div class="invoice-item">
+        <h3>Factura {{ invoice.invoice.number }}</h3>
+        <p><strong>Cliente:</strong> {{ invoice.client.name }}</p>
+        <p><strong>Fecha:</strong> {{ invoice.invoice.date }}</p>
+        {% if invoice.totals and invoice.totals.totalDue is not none %}
+            <p><strong>Total:</strong> ${{ "%.2f"|format(invoice.totals.totalDue) }}</p>
+        {% else %}
+            <p><strong>Total:</strong> No disponible</p>
+        {% endif %}
+        <div class="actions">
+            <a href="{{ url_for('invoices.show_invoice',
+                    index=loop.index0,
+                    lang=request.args.get('lang', 'eng')) }}"
+                class="button">Ver</a>
+
+           <a href="{{ url_for('invoices.generate_invoice',
+                   index=loop.index0,
+                   lang=request.args.get('lang', 'eng')) }}"
+                class="button">Generar PDF</a>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

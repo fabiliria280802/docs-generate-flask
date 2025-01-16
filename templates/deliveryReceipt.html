@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="{{ 'es' if lang == 'esp' else 'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if lang == 'esp' %}
+          Acta de Recepción
+        {% else %}
+          Delivery Receipt
+        {% endif %}
+    </title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: medium;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .delivery-content {
+            width: 100%;
+            margin: 0 auto;
+            padding: 20mm;
+            box-sizing: border-box;
+            background: white;
+            page-break-inside: avoid;
+        }
+        p {
+            text-align: justify;
+            font-size: medium;
+        }
+        .line {
+            margin: auto;
+        }
+        .signature {
+            margin-top: 40mm;
+            text-align: left;
+        }
+        .signature img {
+            max-width: 200px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="delivery-content">
+        <div class="title">
+            {% if lang == 'esp' %}
+              Acta de Recepción
+            {% else %}
+              Delivery Receipt
+            {% endif %}
+        </div>
+        <p>
+            {% if lang == 'esp' %}
+                En la fecha <strong>{{ data.receiver.date }}</strong>, la empresa <strong>{{ data.receiver.name }}</strong> confirmó la recepción de los bienes y/o servicios proporcionados por <strong>{{ data.receiver.from }}</strong>. Este proceso corresponde al pedido identificado con el número <strong>{{ data.receiver.orderNumber }}</strong>, relacionado con la factura número <strong>{{ data.receiver.invoiceNumber }}</strong>. Dicho pedido incluye un HES asociado con el número <strong>{{ data.receiver.hes }}</strong>, y tiene un valor total de <strong>USD {{ "%.2f"|format(data.receiver.price) }}</strong>, que refleja la suma de los bienes y/o servicios entregados en las condiciones acordadas.
+            {% else %}
+                On the date <strong>{{ data.receiver.date }}</strong>, the company <strong>{{ data.receiver.name }}</strong> confirmed the receipt of goods and/or services provided by <strong>{{ data.receiver.from }}</strong>. This process corresponds to the order identified with number <strong>{{ data.receiver.orderNumber }}</strong>, associated with invoice number <strong>{{ data.receiver.invoiceNumber }}</strong>. This order includes an HES associated with the number <strong>{{ data.receiver.hes }}</strong>, and has a total value of <strong>USD {{ "%.2f"|format(data.receiver.price) }}</strong>, reflecting the sum of goods and/or services delivered under the agreed conditions.
+            {% endif %}
+        </p>
+        <p>
+            {% if lang == 'esp' %}
+                Este acta certifica que la entrega fue realizada dentro del plazo estipulado, el cual finalizó el día <strong>{{ data.receiver.endDate }}</strong>. Ambas partes reafirman su conformidad con los términos previamente establecidos, asegurando así la validez de esta recepción como parte del proceso contractual y logístico. Este documento sirve como registro oficial del cumplimiento de las obligaciones por parte del proveedor (<strong>{{ data.receiver.from }}</strong>) al cliente (<strong>{{ data.receiver.name }}</strong>).
+            {% else %}
+                This receipt certifies that the delivery was made within the stipulated timeframe, which ended on <strong>{{ data.receiver.endDate }}</strong>. Both parties reaffirm their agreement with the previously established terms, thus ensuring the validity of this receipt as part of the contractual and logistical process. This document serves as an official record of the fulfillment of obligations by the provider (<strong>{{ data.receiver.from }}</strong>) to the client (<strong>{{ data.receiver.name }}</strong>).
+            {% endif %}
+        </p>
+
+        <div class="signature">
+            <p><strong>{{ data.receiver.employee_name }}</strong></p>
+            {% if data.receiver.employee_signature %}
+                <img src="{{ url_for('static', filename='signatures/' + ('es/' if lang == 'esp' else 'en/') + data.receiver.employee_signature) }}" alt="{% if lang == 'esp' %}Firma{% else %}Signature{% endif %}">
+            {% else %}
+                <p>
+                    {% if lang == 'esp' %}
+                        (Sin firma registrada)
+                    {% else %}
+                        (No signature available)
+                    {% endif %}
+                </p>
+            {% endif %}
+            <p class="line">________________________</p>
+            <p>{{ data.receiver.employee_position }}</p>
+            <p><strong>{{ data.receiver.name }}</strong></p>
+        </div>        
+    </div>
+</body>
+</html>
+

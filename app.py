@@ -1,150 +1,51 @@
-from flask import Flask, render_template, send_from_directory, request, jsonify
-from weasyprint import HTML
-import os
-import json
-
+from flask import Flask
+from controllers.invoices import invoices_blueprint
+from controllers.contracts import contracts_blueprint
+from controllers.deliveries import deliveries_blueprint
+from controllers.documents import documents_blueprint
+from controllers.data import data_blueprint
+from controllers.home import home_blueprint
 app = Flask(__name__)
 
-# Create necessary directories if they don't exist
-required_dirs = ["static/data", "static/assets", "examples"]
-for directory in required_dirs:
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+# Registrar Blueprints
+app.register_blueprint(invoices_blueprint, url_prefix='/invoices')
+app.register_blueprint(contracts_blueprint, url_prefix='/contracts')
+app.register_blueprint(deliveries_blueprint, url_prefix='/deliveries')
+app.register_blueprint(documents_blueprint, url_prefix='/documents')
+app.register_blueprint(data_blueprint, url_prefix='/data')
+app.register_blueprint(home_blueprint)
+# app.secret_key = 'AIzaSyDlGhz9JO1RAHRjvemXbjYFg_Rh7MrDQlQ'
 
-def get_invoice_data():
-    try:
-        json_path = os.path.join('static', 'data', 'invoice-data.json')
-        with open(json_path, 'r', encoding='utf-8') as file:
-            return json.load(file)
-    except Exception as e:
-        print(f"Error al leer JSON: {str(e)}")
-        return None
+""" Ruta para iniciar la autenticación
+@app.route('/authorize')
+def authorize():
+    flow = Flow.from_client_secrets_file(
+        'credentials.json',
+        scopes=['https://www.googleapis.com/auth/drive'],
+        redirect_uri=url_for('oauth2callback', _external=True)
+    )
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true'
+    )
+    session['state'] = state
+    return redirect(authorization_url)
 
-@app.route('/')
-def home():
-    invoice_data = get_invoice_data()
-    if invoice_data is None:
-        return "Error: No se pudo cargar los datos de las facturas", 500
-    # Mostrar la lista de facturas disponibles
-    return render_template('invoice_list.html', invoices=invoice_data['invoices'])
-
-@app.route('/invoice/<int:index>')
-def show_invoice(index):
-    invoice_data = get_invoice_data()
-    if invoice_data is None:
-        return "Error: No se pudo cargar los datos de las facturas", 500
-
-    try:
-        invoice = invoice_data['invoices'][index]
-
-        # Cálculo del índice de la imagen (1-21)
-        total_images = 21
-        image_index = (index % total_images) + 1  # Cicla de 1 a 21
-
-        return render_template('invoice.html', data=invoice, image_index=image_index)
-    except IndexError:
-        return "Factura no encontrada", 404
-
-
-@app.route('/generate_invoice/<int:index>')
-def generate_invoice(index):
-    invoice_data = get_invoice_data()
-    if invoice_data is None:
-        return "Error: No se pudo cargar los datos de las facturas", 500
-
-    try:
-        invoice = invoice_data['invoices'][index]
-        total_images = 21
-        image_index = (index % total_images) + 1
-
-        rendered = render_template('invoice.html', data=invoice, image_index=image_index)
-        filename = f"invoice_{invoice['invoice']['number']}.pdf"
-        pdf_path = os.path.join('examples', filename)
-
-        HTML(string=rendered, base_url=request.base_url).write_pdf(pdf_path)
-        return f"Factura generada con éxito en /examples/{filename}"
-    except IndexError:
-        return "Factura no encontrada", 404
-
-@app.route('/generate_all_invoices')
-def generate_all_invoices():
-    invoice_data = get_invoice_data()
-    if invoice_data is None:
-        return "Error: No se pudo cargar los datos de las facturas", 500
-
-    total_images = 21  # Número total de imágenes
-    generated_files = []
-
-    for index, invoice in enumerate(invoice_data['invoices']):
-        # Calcular el índice de la imagen (1-21) de manera cíclica
-        image_index = (index % total_images) + 1
-
-        # Renderizar la plantilla pasando el índice de la imagen
-        rendered = render_template('invoice.html', data=invoice, image_index=image_index)
-        
-        # Crear el nombre del archivo basado en el número de factura
-        filename = f"invoice_{invoice['invoice']['number']}.pdf"
-        pdf_path = os.path.join('examples', filename)
-        
-        # Generar el PDF y guardarlo
-        HTML(string=rendered, base_url=request.base_url).write_pdf(pdf_path)
-        generated_files.append(filename)
-
-    return jsonify({
-        "message": "Todas las facturas fueron generadas con éxito",
-        "files": generated_files
-    })
-
-@app.route('/check_logos')
-def check_logos():
-    logos_dir = os.path.join(os.path.dirname(__file__), 'static', 'assets')
-    available_logos = os.listdir(logos_dir)
-
-    invoice_data = get_invoice_data()
-    companies = []
-    if invoice_data and 'invoices' in invoice_data:
-        for invoice in invoice_data['invoices']:
-            company_name = invoice.get('company', {}).get('name', '').lower().replace(' ', '')
-            expected_logo = f"{company_name}-logo.png"
-            companies.append({
-                'name': company_name,
-                'expected_logo': expected_logo,
-                'logo_exists': expected_logo in available_logos
-            })
-
-    return jsonify({
-        'available_logos': available_logos,
-        'companies': companies
-    })
-
-@app.route('/debug_logos')
-def debug_logos():
-    logos_dir = os.path.join('static', 'assets')
-    return jsonify({
-        'logos_available': os.listdir(logos_dir),
-        'logos_needed': [
-            'kappa-logo.png',
-            'aws-logo.png',
-            'google-logo.png',
-            'microsoft-logo.png',
-            'dell-logo.png',
-            'salesforce-logo.png',
-            'ibm-logo.png',
-            'default-logo.png'
-        ]
-    })
-
-@app.route('/list_all')
-def list_all():
-    invoice_data = get_invoice_data()
-    if invoice_data and 'invoices' in invoice_data:
-        return jsonify({
-            'total_invoices': len(invoice_data['invoices']),
-            'companies': [inv['company']['name'] for inv in invoice_data['invoices']]
-        })
-    return "No hay datos", 404
-
+ Ruta de callback para manejar la respuesta de Google
+@app.route('/oauth2callback')
+def oauth2callback():
+    state = session['state']
+    flow = Flow.from_client_secrets_file(
+        'credentials.json',
+        scopes=['https://www.googleapis.com/auth/drive'],
+        state=state,
+        redirect_uri=url_for('oauth2callback', _external=True)
+    )
+    flow.fetch_token(authorization_response=request.url)
+    credentials = flow.credentials
+    service = build('drive', 'v3', credentials=credentials)
+    # Ahora puedes usar 'service' para interactuar con la API de Google Drive
+    return 'Autenticación exitosa'
+    """
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 3000))
-    app.run(host='0.0.0.0', port=port, debug=True)
-
+    app.run(host='0.0.0.0', port=5500, debug=True)

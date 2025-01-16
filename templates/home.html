@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Home page{% endblock %}
+
+{% block extra_css %}
+<style>
+    .data-source {
+        margin-top: 20px;
+    }
+    .data-source button {
+        margin-right: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>Welcome to the Document Generator</h1>
+    <p>This is a simple application to generate documents using Flask and Jinja templates.</p>
+    <p>Choose where to get data:</p>
+    <div class="data-source">
+        <form method="POST" action="/set_data_source">
+            <button type="submit" name="data_source" value="local">Use Local Data</button>
+            <button type="submit" name="data_source" value="google_drive">Use Google Drive Data</button>
+        </form>
+    </div>
+
+    <p>Don't have data? don't need to worry, click generate:</p>
+    <form method="POST" action="/create_data_source">
+        <button type="submit" name="data_source" value="google_drive">Generate Data</button>
+    </form>
+</div>
+{% endblock %}

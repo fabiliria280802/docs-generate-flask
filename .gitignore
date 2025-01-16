@@ -125,13 +125,16 @@ celerybeat.pid
 .env
 .venv
 env/
-static/
+static/data-eng
+static/data-esp
+static/signatures
 examples/
 data/
 venv/
 ENV/
 env.bak/
 venv.bak/
+credentials/
 
 # Spyder project settings
 .spyderproject

@@ -1,107 +1,142 @@
-# docs-generate-flask
-This my repo is microservice for generate docs in pdf using flask and jinja2 template engine. Use this repo to generate docs in pdf.
+# Flask Docs Generator Microservice
 
-## Project structure
+This repository contains a Flask application that generates documentation and serves as a microservice for the SALEM project.
+
+## Table of Contents
+
+- [Project Description](#project-description)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Endpoints](#api-endpoints)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Project Description
+
+The Flask Docs Generator Microservice is designed to generate documentation for various services and act as a microservice within the SALEM project. This application provides a streamlined way to generate and serve documentation, ensuring that all necessary information is readily accessible.
+
 ```plaintext
 .
 ├── app.py
 ├── requirements.txt
 ├── dockerfile
-├── venv
+├── credentials/
 │   └── ...
-├── example
+├── examples/
 │   └── ...
-├── static
+├── venv/
+│   └── ...
+├── example/
+│   └── ...
+├── static/
 │   ├── assets
 │   │   └── ...
-│   ├── data
+│   ├── data-esp
+│   │   └── ...
+│   ├── data-esp
 │   │   └── ...
 │   ├── fonts
 │   │   └── ...
 │   └── signatures
 │       └── ...
-├── tests
+├── tests/
 │   └── ...
-└── templates
+└── templates/
+    ├── base.html
+    ├── deliveryReceipt-list.html
     ├── deliveryReceipt.html
-    ├── deliveryReceipt-error.html
-    ├── contract-error.html
     ├── contract.html
-    ├── invoice-error.html
+    ├── contract-list.html
+    ├── invoice-list.html
     └── invoice.html
 ```
-- app.py: the main app
-- invoice.html: the template for the docs
-- deliveryReceipt.html: the template for the docs
-- contract.html: the template for the docs
-- invoice-error.html: the template for the docs with error
-- deliveryReceipt-error.html: the template for the docs with error
-- contract-error.html: the template for the docs with error
-- requirements.txt: the dependencies
-- templates: the templates for the invoice
-- static: the static files for the invoice
-- venv: the environment variables
-- dockerfile: the dockerfile for the app
-- example: the example data for the invoice
-- tests: the tests for the app
 
----
+## Features
 
-## How to run app (windows)
-**Description:** This is the main app that will be used to generate docs.
-1. Create a virtual environment:
-```bash
- python -m venv env
- ```
-2. Activate the virtual environment:
-```bash
-    .\venv\Scripts\activate
-```
-3. Install the dependencies:
-```bash
-    python -m pip install -r requirements.txt
-```
-4. Run the app:
-```bash
-    python -m flask --app .\app.py run
-```
+- Generate documentation for various services.
+- Serve documentation through a simple API.
+- Easy to integrate into the SALEM project.
+- Built with Flask and supports both Python and HTML.
 
-**Note:** if you are having trouble with adding a new dependency, pliz go to requirements.txt then go back to step 3, finally use `pip list` to check if the dependency is installed, and write library_name==version in requirements.txt
+## Installation
 
----
+To install and run the Flask Docs Generator Microservice, follow these steps:
 
-## How to run generate_invoices.py
-**Description:** This script is used to generate docs in json that will be used to generate docs in pdf.
-1. Go to the directory:
-```bash
-cd scripts
-```
-2. Activate the virtual environment:
-```bash
-.\venv\Scripts\activate
-```
-3. Run the script:
-```bash
- python generate_invoices.py
- ```
+1. **Clone the repository:**
 
-**Note:** If you have any issues with the virtual environment, you can try to install the dependencies manually and you will need to use command `deactivate` to deactivate the virtual environment and then run `.\venv\Scripts\activate` to activate it again.
+    ```bash
+    git clone https://github.com/fabiliria280802/docs-generate-flask.git
+    cd docs-generate-flask
+    ```
 
----
-## Endpoints
-### How to generate invoice
+2. **Create a virtual environment:**
+
+    ```bash
+    python3 -m venv venv # On windows use `python -m venv venv
+    `
+    source venv/bin/activate  # On Windows use `.\venv\Scripts\activate`
+    ```
+
+3. **Install the dependencies:**
+
+    ```bash
+    pip install -r requirements.txt # On Windows use ` python -m pip install -r requirements.txt`
+    ```
+If your are having any trouble with installing the  dependencies for linux/Mac, try using:
+
+    ```bash
+    python3 -m pip install -r requirements.txt
+    ```
+
+4. **Run the Flask application:**
+
+    ```bash
+    flask run --port=5500 # On Windows use `python -m flask --app .\app.py run`
+    ```
+
+If your are having any trouble with running teh app on linux/Mac, try using the command for windows:
+
+    ```bash
+     python3 -m flask --app .\app.py run
+    ```
+
+The application will be available at `http://127.0.0.1:5000`.
+
+## Usage
+
+Once the application is running, you can use the provided API endpoints to generate and retrieve documentation.
+
+### Example
 
 ```bash
-curl http://localhost:3000/generate_invoice
+curl http://127.0.0.1:5000/generate-docs -d "service_name=example_service"
 ```
 
-### How to generate invoice with a specific data
+## API Endpoints
 
-```bash
-curl http://localhost:3000/generate_invoice?data=
-```
-### How to generate invoice with a specific data and a specific template
+- **`POST /generate-docs`**: Generate documentation for a specified service.
+    - Request Body:
+        - `service_name` (string): The name of the service for which to generate documentation.
+    - Response: The generated documentation in HTML format.
 
-```bash
-curl http://localhost:3000/generate_invoice?data=
-```
+- **`GET /docs/<service_name>`**: Retrieve documentation for a specified service.
+    - URL Parameters:
+        - `service_name` (string): The name of the service for which to retrieve documentation.
+    - Response: The documentation in HTML format.
+
+## Contributing
+
+Contributions are welcome! Please follow these steps to contribute:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Make your changes.
+4. Commit your changes (`git commit -m 'Add some feature'`).
+    - We recommend the use of key words at the begin of the commit like feat, fix, bug, ect.
+5. Push to the branch (`git push origin feature-branch`).
+6. Open a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

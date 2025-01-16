@@ -1,40 +1,159 @@
 /*this is an example of the data that you can use to generate the invoice*/
 {
-    "company": {
-        "name": "Tu Empresa",
-        "address": "Dirección de la empresa",
-        "city": "Ciudad",
-        "country": "País",
-        "phone": "+1234567890",
-        "website": "www.tuempresa.com",
-        "taxId": "123456789"
-    },
-    "invoice": {
-        "number": "INV-001",
-        "date": "2024-03-20",
-        "payableAt": "2024-04-20",
-        "orderNumber": "ORD-001"
-    },
-    "client": {
-        "name": "Nombre del Cliente",
-        "ruc": "RUC12345",
-        "address": "Dirección del cliente",
-        "city": "Ciudad del cliente",
-        "country": "País del cliente"
-    },
-    "items": [
+    "invoices": [
         {
-            "code": "ITEM1",
-            "description": "Producto 1",
-            "quantity": 1,
-            "unitCost": 100.00,
-            "cost": 100.00
+            "company": {
+            "name": "jackson-riley",
+            "ruc": "1793168604001",
+            "address": "316 Anthony Islands, Hendersonmouth, AK 81929",
+            "city": "Port Ryanbury",
+            "country": "Peru",
+            "phone": "001-900-356-9146",
+            "website": "www.jackson-riley.com",
+            "email": "info@jackson-riley.com",
+            "taxId": "04319450"
+            },
+            "invoice": {
+            "number": "1100001",
+            "date": "2025-01-02",
+            "payableAt": "2025-01-05",
+            "orderNumber": "3400001"
+            },
+            "client": {
+            "name": "ENAP SIPETROL S.A. ENAP SIPEC",
+            "ruc": "1791239245001",
+            "address": "AV. GRANADOS VIA A NAYON EDIFICIO EKOPARK OFICINA 3 PISO 3",
+            "city": "Quito",
+            "country": "Ecuador",
+            "employee_name": "Melanie Norris",
+            "employee_position": "Budget Analyst",
+            "employee_signature": "enap_signature_1.png",
+            "in_charge_info": {
+                "name": "Andrew Price",
+                "position": "Accounts Payable Clerk",
+                "signature": "signature1_.png"
+            }
+            },
+            "items": [
+            {
+                "code": "36A1",
+                "description": "Software quality assurance and testing",
+                "hes": "81200001",
+                "quantity": 2,
+                "unitCost": 49.18,
+                "cost": 98.36
+            },
+            {
+                "code": "36A2",
+                "description": "Database design and management",
+                "hes": "81200001",
+                "quantity": 3,
+                "unitCost": 68.87,
+                "cost": 206.61
+            }
+            ],
+            "totals": {
+            "beforeTax": 304.97,
+            "taxRate": 15,
+            "tax": 45.75,
+            "totalDue": 350.72
+            },
+            "in_charge_info": {
+            "name": "Andrew Price",
+            "position": "Accounts Payable Clerk",
+            "signature": "signature1_.png"
+            }
         }
-    ],
-    "totals": {
-        "beforeTax": 100.00,
-        "taxRate": 18,
-        "tax": 18.00,
-        "totalDue": 118.00
-    }
+    ]
+}
+
+/*this is an example of the data that you can use to generate the contract*/
+
+{
+    "contracts": [
+        {
+            "company": {
+                "name": "jackson-riley",
+                "ruc": "1793168604001",
+                "address": "316 Anthony Islands, Hendersonmouth, AK 81929",
+                "city": "Port Ryanbury",
+                "country": "Peru",
+                "phone": "001-900-356-9146",
+                "website": "www.jackson-riley.com",
+                "email": "info@jackson-riley.com",
+                "taxId": "04319450"
+            },
+            "client": {
+                "name": "ENAP SIPETROL S.A. ENAP SIPEC",
+                "ruc": "1791239245001",
+                "address": "AV. GRANADOS VIA A NAYON EDIFICIO EKOPARK OFICINA 3 PISO 3",
+                "city": "Quito",
+                "country": "Ecuador",
+                "employee_name": "Melanie Norris",
+                "employee_position": "Budget Analyst",
+                "employee_signature": "enap_signature_1.png",
+                "in_charge_info": {
+                    "name": "Andrew Price",
+                    "position": "Accounts Payable Clerk",
+                    "signature": "signature1_.png"
+                }
+            },
+            "items": [
+                {
+                    "code": "36A1",
+                    "description": "Software quality assurance and testing",
+                    "hes": "81200001",
+                    "quantity": 2,
+                    "unitCost": 49.18,
+                    "cost": 98.36
+                },
+                {
+                    "code": "36A2",
+                    "description": "Database design and management",
+                    "hes": "81200001",
+                    "quantity": 3,
+                    "unitCost": 68.87,
+                    "cost": 206.61
+                }
+            ],
+            "totals": {
+                "beforeTax": 304.97,
+                "taxRate": 15,
+                "tax": 45.75,
+                "totalDue": 350.72
+            },
+            "contract": {
+                "number": "6500001",
+                "startDate": "2025-01-02",
+                "endDate": "2025-09-22",
+                "invoiceNumber": "1100001",
+                "hes": "81200001",
+                "orderNumber": "3400001"
+            }
+        }
+    ]
+}
+
+/*this is an example of the data that you can use to generate the delivery receipt*/
+
+{
+    "deliveries": [
+        {
+            "receiver": {
+                "number": "1400001",
+                "name": "ENAP SIPETROL S.A. ENAP SIPEC",
+                "from": "jackson-riley",
+                "ruc": "1793168604001",
+                "invoiceNumber": "1100001",
+                "hes": "81200001",
+                "orderNumber": "3400001",
+                "date": "2025-01-02",
+                "endDate": "2025-03-12",
+                "price": 350.72,
+                "employee_name": "Melanie Norris",
+                "employee_position": "Budget Analyst",
+                "employee_signature": "enap_signature_1.png"
+            }
+        }
+    ]
 }
